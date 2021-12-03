@@ -4,6 +4,8 @@
 #include "ofxGui.h"
 #include  "ofxAssimpModelLoader.h"
 #include "Octree.h"
+#include "Particle.h";
+#include "ParticleSystem.h";
 
 
 
@@ -73,4 +75,6 @@ class ofApp : public ofBaseApp{
 		vector<Box> bboxList;
 
 		const float selectionRange = 4.0;
+
+		Particle landerParticle; 
 };

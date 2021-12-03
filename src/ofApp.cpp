@@ -18,14 +18,14 @@
 //--------------------------------------------------------------
 // setup scene, lighting, state and load geometry
 //
-void ofApp::setup(){
+void ofApp::setup() {
 	bWireframe = false;
 	bDisplayPoints = false;
 	bAltKeyDown = false;
 	bCtrlKeyDown = false;
 	bLanderLoaded = false;
 	bTerrainSelected = true;
-//	ofSetWindowShape(1024, 768);
+	//	ofSetWindowShape(1024, 768);
 	cam.setDistance(10);
 	cam.setNearClip(.1);
 	cam.setFov(65.5);   // approx equivalent to 28mm in 35mm format
@@ -57,11 +57,22 @@ void ofApp::setup(){
 
 	uint64_t endTime = ofGetCurrentTime().getAsMilliseconds();
 	cout << "Finished in " << (endTime - startTime) << "ms" << endl;
-	
+
 	cout << "Number of Verts: " << mars.getMesh(0).getNumVertices() << endl;
 
 	testBox = Box(Vector3(3, 3, 0), Vector3(5, 5, 2));
 
+	if (landerParticle.load("geo/lander.obj")) {
+		bboxList.clear();
+		for (int i = 0; i < lander.getMeshCount(); i++) {
+			bboxList.push_back(Octree::meshBounds(lander.getMesh(i)));
+		}
+		bLanderLoaded = true;
+		cout << "Loaded";
+	}
+	else {
+		cout << "Can't load lander.obj";
+	}
 }
  
 //--------------------------------------------------------------
@@ -96,7 +107,7 @@ void ofApp::draw() {
 		mars.drawFaces();
 		ofMesh mesh;
 		if (bLanderLoaded) {
-			lander.drawFaces();
+			landerParticle.draw();
 			if (!bTerrainSelected) drawAxis(lander.getPosition());
 			if (bDisplayBBoxes) {
 				ofNoFill();
