@@ -31,20 +31,11 @@ void ParticleSystem::update() {
 	// check if empty and just return
 	if (particles.size() == 0) return;
 
-	vector<Particle>::iterator p = particles.begin();
-	vector<Particle>::iterator tmp;
 
 	// check which particles have exceed their lifespan and delete
 	// from list.  When deleting multiple objects from a vector while
 	// traversing at the same time, we need to use an iterator.
 	//
-	while (p != particles.end()) {
-		if (p->lifespan != -1 && p->age() > p->lifespan) {
-			tmp = particles.erase(p);
-			p = tmp;
-		}
-		else p++;
-	}
 
 	// update forces on all particles first 
 	//

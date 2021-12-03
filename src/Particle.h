@@ -9,7 +9,7 @@ class Particle {
 public:
 	Particle();
 
-	ofVec3f position;
+	ofVec3f pos;
 	ofVec3f velocity;
 	ofVec3f acceleration;
 	ofVec3f forces;

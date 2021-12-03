@@ -68,17 +68,24 @@ void ofApp::setup() {
 			bboxList.push_back(Octree::meshBounds(landerParticle.lander.getMesh(i)));
 		}
 		bLanderLoaded = true;
+		sys.add(landerParticle); 
 		cout << "Loaded";
+		
 	}
 	else {
 		cout << "Can't load lander.obj";
 	}
+	//gravityForce = new GravityForce(ofVec3f(0, 0, 0));
+	//sys.addForce(gravityForce);
+
+
 }
  
 //--------------------------------------------------------------
 // incrementally update scene (animation)
 //
 void ofApp::update() {
+	sys.update(); 
 	
 }
 //--------------------------------------------------------------
@@ -96,7 +103,7 @@ void ofApp::draw() {
 	mars.drawFaces();
 	ofMesh mesh;
 	if (bLanderLoaded) {
-		landerParticle.draw();
+		sys.draw(); 
 		/**if (bLanderSelected) {
 
 			ofVec3f min = landerParticle.lander.getSceneMin() + landerParticle.lander.getPosition();
