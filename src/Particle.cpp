@@ -22,6 +22,7 @@ void Particle::draw() {
 	if (bLanderLoaded) {
 		lander.drawFaces();
 	}
+	
 }
 
 // write your own integrator here.. (hint: it's only 3 lines of code)

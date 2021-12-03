@@ -64,8 +64,8 @@ void ofApp::setup() {
 
 	if (landerParticle.load("geo/lander.obj")) {
 		bboxList.clear();
-		for (int i = 0; i < lander.getMeshCount(); i++) {
-			bboxList.push_back(Octree::meshBounds(lander.getMesh(i)));
+		for (int i = 0; i < landerParticle.lander.getMeshCount(); i++) {
+			bboxList.push_back(Octree::meshBounds(landerParticle.lander.getMesh(i)));
 		}
 		bLanderLoaded = true;
 		cout << "Loaded";
@@ -97,23 +97,10 @@ void ofApp::draw() {
 	ofMesh mesh;
 	if (bLanderLoaded) {
 		landerParticle.draw();
-		if (!bTerrainSelected) drawAxis(lander.getPosition());
-		if (bDisplayBBoxes) {
-			ofNoFill();
-			ofSetColor(ofColor::white);
-			for (int i = 0; i < lander.getNumMeshes(); i++) {
-				ofPushMatrix();
-				ofMultMatrix(lander.getModelMatrix());
-				ofRotate(-90, 1, 0, 0);
-				Octree::drawBox(bboxList[i]);
-				ofPopMatrix();
-			}
-		}
+		/**if (bLanderSelected) {
 
-		if (bLanderSelected) {
-
-			ofVec3f min = lander.getSceneMin() + lander.getPosition();
-			ofVec3f max = lander.getSceneMax() + lander.getPosition();
+			ofVec3f min = landerParticle.lander.getSceneMin() + landerParticle.lander.getPosition();
+			ofVec3f max = landerParticle.lander.getSceneMax() + landerParticle.lander.getPosition();
 
 			Box bounds = Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
 			ofSetColor(ofColor::white);
@@ -125,24 +112,16 @@ void ofApp::draw() {
 			for (int i = 0; i < colBoxList.size(); i++) {
 				Octree::drawBox(colBoxList[i]);
 			}
-		}
+		}**/
 	}
-	if (bTerrainSelected) drawAxis(ofVec3f(0, 0, 0));
+	
 
 
 
-	if (bDisplayPoints) {                // display points as an option    
-		glPointSize(3);
-		ofSetColor(ofColor::green);
-		mars.drawVertices();
-	}
+	
 
-	// highlight selected point (draw sphere around selected point)
-	//
-	if (bPointSelected) {
-		ofSetColor(ofColor::blue);
-		ofDrawSphere(selectedPoint, .1);
-	}
+
+
 
 
 	// recursively draw octree
@@ -207,7 +186,6 @@ void ofApp::keyPressed(int key) {
 	switch (key) {
 	case 'B':
 	case 'b':
-		bDisplayBBoxes = !bDisplayBBoxes;
 		break;
 	case 'C':
 	case 'c':
@@ -223,7 +201,6 @@ void ofApp::keyPressed(int key) {
 		break;
 	case 'L':
 	case 'l':
-		bDisplayLeafNodes = !bDisplayLeafNodes;
 		break;
 	case 'O':
 	case 'o':
@@ -241,7 +218,6 @@ void ofApp::keyPressed(int key) {
 	case 'u':
 		break;
 	case 'v':
-		togglePointsDisplay();
 		break;
 	case 'V':
 		break;
@@ -317,14 +293,14 @@ void ofApp::mousePressed(int x, int y, int button) {
 		glm::vec3 mouseWorld = cam.screenToWorld(glm::vec3(mouseX, mouseY, 0));
 		glm::vec3 mouseDir = glm::normalize(mouseWorld - origin);
 
-		ofVec3f min = lander.getSceneMin() + lander.getPosition();
-		ofVec3f max = lander.getSceneMax() + lander.getPosition();
+		ofVec3f min = landerParticle.lander.getSceneMin() + landerParticle.lander.getPosition();
+		ofVec3f max = landerParticle.lander.getSceneMax() + landerParticle.lander.getPosition();
 
 		Box bounds = Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
 		bool hit = bounds.intersect(Ray(Vector3(origin.x, origin.y, origin.z), Vector3(mouseDir.x, mouseDir.y, mouseDir.z)), 0, 10000);
 		if (hit) {
 			bLanderSelected = true;
-			mouseDownPos = getMousePointOnPlane(lander.getPosition(), cam.getZAxis());
+			mouseDownPos = getMousePointOnPlane(landerParticle.lander.getPosition(), cam.getZAxis());
 			mouseLastPos = mouseDownPos;
 			bInDrag = true;
 		}
@@ -369,7 +345,7 @@ void ofApp::mouseDragged(int x, int y, int button) {
 	// if moving camera, don't allow mouse interaction
 	//
 	if (cam.getMouseInputEnabled()) return;
-
+	/*
 	if (bInDrag) {
 
 		glm::vec3 landerPos = lander.getPosition();
@@ -395,14 +371,14 @@ void ofApp::mouseDragged(int x, int y, int button) {
 		}
 		else {
 			cout << "OK" << endl;
-		}*/
+		}
 
 
 	}
 	else {
 		ofVec3f p;
 		raySelectWithOctree(p);
-	}
+	}*/
 }
 
 //--------------------------------------------------------------
@@ -491,8 +467,9 @@ void ofApp::savePicture() {
 // support drag-and-drop of model (.obj) file loading.  when
 // model is dropped in viewport, place origin under cursor
 //
-void ofApp::dragEvent2(ofDragInfo dragInfo) {
 
+void ofApp::dragEvent2(ofDragInfo dragInfo) {
+	/*
 	ofVec3f point;
 	mouseIntersectPlane(ofVec3f(0, 0, 0), cam.getZAxis(), point);
 	if (lander.loadModel(dragInfo.files[0])) {
@@ -509,6 +486,7 @@ void ofApp::dragEvent2(ofDragInfo dragInfo) {
 		cout << "Mesh Count: " << lander.getMeshCount() << endl;
 	}
 	else cout << "Error: Can't load model" << dragInfo.files[0] << endl;
+	*/
 }
 
 bool ofApp::mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm, ofVec3f &point) {
@@ -524,7 +502,9 @@ bool ofApp::mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm, ofVec3f &
 // support drag-and-drop of model (.obj) file loading.  when
 // model is dropped in viewport, place origin under cursor
 //
+
 void ofApp::dragEvent(ofDragInfo dragInfo) {
+	/*
 	if (lander.loadModel(dragInfo.files[0])) {
 		bLanderLoaded = true;
 		lander.setScaleNormalization(false);
@@ -573,10 +553,10 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
 			//
 			landerBounds = Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
 		}
+		*/
 	}
 
 
-}
 
 //  intersect the mouse ray with the plane normal to the camera 
 //  return intersection point.   (package code above into function)

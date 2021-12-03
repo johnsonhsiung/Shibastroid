@@ -39,7 +39,7 @@ class ofApp : public ofBaseApp{
 		glm::vec3 ofApp::getMousePointOnPlane(glm::vec3 p , glm::vec3 n);
 
 		ofEasyCam cam;
-		ofxAssimpModelLoader mars, lander;
+		ofxAssimpModelLoader mars;
 		ofLight light;
 		Box boundingBox, landerBounds;
 		Box testBox;
