@@ -31,7 +31,6 @@ class ofApp : public ofBaseApp{
 		void drawAxis(ofVec3f);
 		void initLightingAndMaterials();
 		void savePicture();
-		void toggleWireframeMode();
 		void togglePointsDisplay();
 		void toggleSelectTerrain();
 		void setCameraTarget();
@@ -57,7 +56,6 @@ class ofApp : public ofBaseApp{
 
 		bool bAltKeyDown;
 		bool bCtrlKeyDown;
-		bool bWireframe;
 		bool bDisplayPoints;
 		bool bPointSelected;
 		bool bHide;

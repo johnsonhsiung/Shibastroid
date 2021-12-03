@@ -19,7 +19,7 @@
 // setup scene, lighting, state and load geometry
 //
 void ofApp::setup() {
-	bWireframe = false;
+
 	bDisplayPoints = false;
 	bAltKeyDown = false;
 	bCtrlKeyDown = false;
@@ -92,50 +92,38 @@ void ofApp::draw() {
 
 	cam.begin();
 	ofPushMatrix();
-	if (bWireframe) {                    // wireframe mode  (include axis)
-		ofDisableLighting();
-		ofSetColor(ofColor::slateGray);
-		mars.drawWireframe();
-		if (bLanderLoaded) {
-			lander.drawWireframe();
-			if (!bTerrainSelected) drawAxis(lander.getPosition());
-		}
-		if (bTerrainSelected) drawAxis(ofVec3f(0, 0, 0));
-	}
-	else {
-		ofEnableLighting();              // shaded mode
-		mars.drawFaces();
-		ofMesh mesh;
-		if (bLanderLoaded) {
-			landerParticle.draw();
-			if (!bTerrainSelected) drawAxis(lander.getPosition());
-			if (bDisplayBBoxes) {
-				ofNoFill();
-				ofSetColor(ofColor::white);
-				for (int i = 0; i < lander.getNumMeshes(); i++) {
-					ofPushMatrix();
-					ofMultMatrix(lander.getModelMatrix());
-					ofRotate(-90, 1, 0, 0);
-					Octree::drawBox(bboxList[i]);
-					ofPopMatrix();
-				}
+	ofEnableLighting();              // shaded mode
+	mars.drawFaces();
+	ofMesh mesh;
+	if (bLanderLoaded) {
+		landerParticle.draw();
+		if (!bTerrainSelected) drawAxis(lander.getPosition());
+		if (bDisplayBBoxes) {
+			ofNoFill();
+			ofSetColor(ofColor::white);
+			for (int i = 0; i < lander.getNumMeshes(); i++) {
+				ofPushMatrix();
+				ofMultMatrix(lander.getModelMatrix());
+				ofRotate(-90, 1, 0, 0);
+				Octree::drawBox(bboxList[i]);
+				ofPopMatrix();
 			}
+		}
 
-			if (bLanderSelected) {
+		if (bLanderSelected) {
 
-				ofVec3f min = lander.getSceneMin() + lander.getPosition();
-				ofVec3f max = lander.getSceneMax() + lander.getPosition();
+			ofVec3f min = lander.getSceneMin() + lander.getPosition();
+			ofVec3f max = lander.getSceneMax() + lander.getPosition();
 
-				Box bounds = Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
-				ofSetColor(ofColor::white);
-				Octree::drawBox(bounds);
+			Box bounds = Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
+			ofSetColor(ofColor::white);
+			Octree::drawBox(bounds);
 
-				// draw colliding boxes
-				//
-				ofSetColor(ofColor::red);
-				for (int i = 0; i < colBoxList.size(); i++) {
-					Octree::drawBox(colBoxList[i]);
-				}
+			// draw colliding boxes
+			//
+			ofSetColor(ofColor::red);
+			for (int i = 0; i < colBoxList.size(); i++) {
+				Octree::drawBox(colBoxList[i]);
 			}
 		}
 	}
@@ -258,7 +246,6 @@ void ofApp::keyPressed(int key) {
 	case 'V':
 		break;
 	case 'w':
-		toggleWireframeMode();
 		break;
 	case OF_KEY_ALT:
 		cam.enableMouseInput();
@@ -274,10 +261,6 @@ void ofApp::keyPressed(int key) {
 	default:
 		break;
 	}
-}
-
-void ofApp::toggleWireframeMode() {
-	bWireframe = !bWireframe;
 }
 
 void ofApp::toggleSelectTerrain() {
