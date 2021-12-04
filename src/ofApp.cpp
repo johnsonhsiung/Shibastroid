@@ -75,8 +75,8 @@ void ofApp::setup() {
 	else {
 		cout << "Can't load lander.obj";
 	}
-	//gravityForce = new GravityForce(ofVec3f(0, 0, 0));
-	//sys.addForce(gravityForce);
+	gravityForce = new GravityForce(ofVec3f(0, -10, 0));
+	sys.addForce(gravityForce);
 
 	timeLastFrame = ofGetElapsedTimef();
 }

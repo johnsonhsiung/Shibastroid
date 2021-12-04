@@ -5,9 +5,9 @@ Particle::Particle() {
 
 	// initialize particle with some reasonable values first;
 	//
-	velocity.set(1.0, 1.0, 1.0);
+	velocity.set(0.0, 0.0, 0.0);
 	acceleration.set(0.0, 0.0, 0.0);
-	pos.set(5.0, 5.0, 5.0);
+	pos.set(0.0, 0.0, 0.0);
 	forces.set(0.0, 0.0, 0.0);
 	lifespan = 5;
 	birthtime = 0;
@@ -36,29 +36,27 @@ void Particle::integrate(float deltaTime)
 	//lander.setPosition(position.x, position.y, position.z);
 	
 	//pos.set(position.x, position.y, position.z);
-	ofVec3f position = (velocity * deltaTime);
-	pos += position;
-	cout << ofGetFrameRate() << endl;
-	cout << position << "\n" << endl;
-	cout << pos << "\n" << endl;
-	cout << acceleration << "\n" << endl;
-
+	pos += (velocity * deltaTime);
+	lander.setPosition(pos.x,pos.y,pos.z);
 
 
 	// update acceleration with accumulated paritcles forces
 	// remember :  (f = ma) OR (a = 1/m * f)
 	//
-	//ofVec3f accel = acceleration;    // start with any acceleration already on the particle
-	//accel += (forces * (1.0 / mass));
-	//velocity += accel * dt;
+	ofVec3f accel = acceleration;    // start with any acceleration already on the particle
+	accel += (forces * (1.0 / mass));
+	velocity += accel * deltaTime;
 
 	// add a little damping for good measure
 	//
-	//velocity *= damping;
+	velocity *= damping;
 
 	// clear forces on particle (they get re-added each step)
 	//
-	//forces.set(0, 0, 0);
+	forces.set(0, 0, 0);
+	cout << pos << "\n" << endl;
+	cout << velocity << "\n" << endl;
+
 }
 
 bool Particle::load(string path) {
