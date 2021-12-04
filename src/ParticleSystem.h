@@ -64,8 +64,9 @@ public:
 class ThrustForce : public ParticleForce {
 	float magnitude;
 	ofVec3f dir; 
+	bool isAngular;
 
 public:
-	ThrustForce(const ofVec3f &dir, float magnitude);
+	ThrustForce(const ofVec3f &dir, float magnitude, bool isAngular);
 	void updateForce(Particle *);
 };

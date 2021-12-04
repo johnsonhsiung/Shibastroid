@@ -58,6 +58,7 @@ void ParticleSystem::update(float deltaTime) {
 	//
 	for (int i = 0; i < particles.size(); i++)
 		particles[i].integrate(deltaTime);
+	cout << "after integrate: " << particles[0].rotation << "\n" << endl;
 
 }
 
@@ -135,17 +136,23 @@ void ImpulseRingForce::updateForce(Particle * particle) {
 }
 
 
-ThrustForce::ThrustForce(const ofVec3f &dir, float magnitude) {
+ThrustForce::ThrustForce(const ofVec3f &dir, float magnitude, bool isAngular) {
 	applyOnce = true;
 	this->magnitude = magnitude;
 	this->dir = dir; 
+	this->isAngular = isAngular; 
 }
 void ThrustForce::updateForce(Particle * particle) {
 
 	// we basically create a random direction for each particle
 	// the force is only added once after it is triggered.
 	//
-	particle->forces += (dir.getNormalized() * magnitude);
+	if (isAngular) 	particle->angularForces += magnitude;
+
+	else
+	{
+		particle->forces += (dir.getNormalized() * magnitude);
+	}
 }
 
 

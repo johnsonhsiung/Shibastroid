@@ -13,12 +13,15 @@ public:
 	ofVec3f velocity;
 	ofVec3f acceleration;
 	ofVec3f forces;
+	float angularForces; 
+	float angVelocity;
+	float angAcceleration; 
 	float	damping;
 	float   mass;
 	float   lifespan;
 	float   radius;
 	float   birthtime;
-	float rotation = 0.0; 
+	float rotation; 
 	void    integrate(float deltaTime);
 	void    draw();
 	float   age();        // sec

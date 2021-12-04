@@ -9,12 +9,14 @@ Particle::Particle() {
 	acceleration.set(0.0, 0.0, 0.0);
 	pos.set(0.0, 0.0, 0.0);
 	forces.set(0.0, 0.0, 0.0);
+	angularForces = 0.0;
 	lifespan = 5;
 	birthtime = 0;
 	radius = .1;
 	damping = .99;
 	mass = 1;
 	color = ofColor::aquamarine;
+	rotation = 0.0;
 }
 
 void Particle::draw() {
@@ -51,11 +53,19 @@ void Particle::integrate(float deltaTime)
 	//
 	velocity *= damping;
 
+	rotation += (angVelocity * deltaTime);
+	
+	float angAccel = angAcceleration;
+	angAccel += (angularForces * (1.0 / mass));
+	angVelocity += angAccel * deltaTime;
+	angVelocity *= damping; 
 	// clear forces on particle (they get re-added each step)
 	//
 	forces.set(0, 0, 0);
-	cout << pos << "\n" << endl;
-	cout << velocity << "\n" << endl;
+	angularForces = 0;
+	
+	
+
 
 }
 
@@ -80,6 +90,7 @@ float Particle::age() {
 }
 
 ofVec3f Particle::heading() {
+	cout << rotation << "\n" << endl;
 	return glm::normalize(glm::vec3(sin(glm::radians(rotation + 180)), 0, cos(glm::radians(rotation + 180))));
 }
 
