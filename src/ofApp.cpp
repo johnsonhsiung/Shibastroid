@@ -91,7 +91,7 @@ void ofApp::update() {
 	float deltaTime = ofGetElapsedTimef() - timeLastFrame;
 
 	sys.update(deltaTime);
-	cout << "after update: " << landerParticle.rotation << "\n" << endl;
+	cout << "after update: " << sys.particles[0].rotation << "\n" << endl;
 
 	timeLastFrame = ofGetElapsedTimef();
 }
@@ -198,6 +198,7 @@ void ofApp::drawAxis(ofVec3f location) {
 void ofApp::keyPressed(int key) {
 	const int OF_KEY_SPACE = 32;
 
+
 	switch (key) {
 	case OF_KEY_SPACE:
 	{
@@ -251,7 +252,6 @@ void ofApp::keyPressed(int key) {
 	{
 		ThrustForce *rotLeft = new ThrustForce(ofVec3f(0, 0, 0), thrust, true);
 		sys.addForce(rotLeft);
-		cout << "after z: " << landerParticle.rotation << "\n" << endl;
 		break;
 	}
 	case 'x':
@@ -272,7 +272,7 @@ void ofApp::keyPressed(int key) {
 	case OF_KEY_UP:
 	{
 		//Add ThrustForce in forward direction
-		ThrustForce *forward = new ThrustForce(landerParticle.heading(), thrust, false);
+		ThrustForce *forward = new ThrustForce(sys.particles[0].heading(), thrust, false);
 		sys.addForce(forward);
 		cout << "after up: " << landerParticle.rotation << "\n" << endl;
 		break;
@@ -281,7 +281,7 @@ void ofApp::keyPressed(int key) {
 	{
 		//Add ThrustForce in left direction
 
-		ofVec2f temp(landerParticle.heading().x, landerParticle.heading().z);
+		ofVec2f temp(sys.particles[0].heading().x, sys.particles[0].heading().z);
 		temp = temp.rotate(-90);
 		ThrustForce *left = new ThrustForce(ofVec3f(temp.x, 0, temp.y), thrust, false);
 		sys.addForce(left);
@@ -291,7 +291,7 @@ void ofApp::keyPressed(int key) {
 	case OF_KEY_RIGHT: {
 		//Add ThrustForce in right direction
 
-		ofVec2f temp(landerParticle.heading().x, landerParticle.heading().z);
+		ofVec2f temp(sys.particles[0].heading().x, sys.particles[0].heading().z);
 		temp = temp.rotate(90);
 		ThrustForce *right = new ThrustForce(ofVec3f(temp.x, 0, temp.y), thrust, false);
 		sys.addForce(right);
@@ -301,7 +301,7 @@ void ofApp::keyPressed(int key) {
 	{
 		//Add ThrustForce in backward direction
 
-		ThrustForce *backward = new ThrustForce(landerParticle.heading() * -1, thrust, false);
+		ThrustForce *backward = new ThrustForce(sys.particles[0].heading() * -1, thrust, false);
 		sys.addForce(backward);
 		break;
 	}
