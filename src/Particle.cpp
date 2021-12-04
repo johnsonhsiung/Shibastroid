@@ -27,12 +27,8 @@ void Particle::draw() {
 
 // write your own integrator here.. (hint: it's only 3 lines of code)
 //
-void Particle::integrate() {
-
-	
-	// interval for this step
-	//
-	double dt = 1.0 / ofGetFrameRate();
+void Particle::integrate(float deltaTime)
+{
 
 	// update position based on velocity
 	//
@@ -40,8 +36,9 @@ void Particle::integrate() {
 	//lander.setPosition(position.x, position.y, position.z);
 	
 	//pos.set(position.x, position.y, position.z);
-	ofVec3f position = (velocity *dt);
+	ofVec3f position = (velocity * deltaTime);
 	pos += position;
+	cout << ofGetFrameRate() << endl;
 	cout << position << "\n" << endl;
 	cout << pos << "\n" << endl;
 	cout << acceleration << "\n" << endl;

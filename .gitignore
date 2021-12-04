@@ -6,8 +6,8 @@
 # but not the data folder
 ###########################
 
-apps/**/[Bb]in/*
-!apps/**/[Bb]in/data
+[Bb]in/*
+![Bb]in/data
 
 
 ###########################
@@ -15,21 +15,15 @@ apps/**/[Bb]in/*
 # loader dlls
 ###########################
 
-!apps/**/[Bb]in/assimp32.dll
-!apps/**/[Bb]in/assimp64.dll
+![Bb]in/assimp32.dll
+![Bb]in/assimp64.dll
 
 
 ###########################
 # Ignore addon object files
 ###########################
 
-apps/**/OpenFrameworks/
-
-
-#########################
-# OpenFrameworks Binaries
-#########################
-libs/openFrameworksCompiled/lib/vs/x64/
+addons/
 
 #########
 # general

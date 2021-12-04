@@ -20,7 +20,7 @@ public:
 	void add(const Particle &);
 	void addForce(ParticleForce *);
 	void remove(int);
-	void update();
+	void update(float deltaTime);
 	void setLifespan(float);
 	void reset();
 	int removeNear(const ofVec3f & point, float dist);

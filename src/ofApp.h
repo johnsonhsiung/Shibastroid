@@ -12,6 +12,8 @@
 class ofApp : public ofBaseApp{
 
 	public:
+		float timeLastFrame;
+
 		void setup();
 		void update();
 		void draw();

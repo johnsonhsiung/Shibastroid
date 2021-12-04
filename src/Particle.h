@@ -18,7 +18,7 @@ public:
 	float   lifespan;
 	float   radius;
 	float   birthtime;
-	void    integrate();
+	void    integrate(float deltaTime);
 	void    draw();
 	float   age();        // sec
 	bool load(string);

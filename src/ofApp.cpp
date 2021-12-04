@@ -78,15 +78,18 @@ void ofApp::setup() {
 	//gravityForce = new GravityForce(ofVec3f(0, 0, 0));
 	//sys.addForce(gravityForce);
 
-
+	timeLastFrame = ofGetElapsedTimef();
 }
  
 //--------------------------------------------------------------
 // incrementally update scene (animation)
 //
 void ofApp::update() {
-	sys.update(); 
-	
+	float deltaTime = ofGetElapsedTimef() - timeLastFrame;
+
+	sys.update(deltaTime);
+
+	timeLastFrame = ofGetElapsedTimef();
 }
 //--------------------------------------------------------------
 void ofApp::draw() {

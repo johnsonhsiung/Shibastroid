@@ -27,7 +27,7 @@ void ParticleSystem::reset() {
 	}
 }
 
-void ParticleSystem::update() {
+void ParticleSystem::update(float deltaTime) {
 	// check if empty and just return
 	if (particles.size() == 0) return;
 
@@ -57,7 +57,7 @@ void ParticleSystem::update() {
 	// integrate all the particles in the store
 	//
 	for (int i = 0; i < particles.size(); i++)
-		particles[i].integrate();
+		particles[i].integrate(deltaTime);
 
 }
 
