@@ -18,6 +18,7 @@ public:
 	float   lifespan;
 	float   radius;
 	float   birthtime;
+	float rotation = 0.0; 
 	void    integrate(float deltaTime);
 	void    draw();
 	float   age();        // sec
@@ -25,6 +26,7 @@ public:
 	ofColor color;
 	ofxAssimpModelLoader lander; 
 	bool bLanderLoaded; 
+	ofVec3f heading(); 
 };
 
 

@@ -45,6 +45,7 @@ void ofApp::setup() {
 	//
 	gui.setup();
 	gui.add(numLevels.setup("Number of Octree Levels", 1, 1, 10));
+	gui.add(thrust.setup("Thrust", 5, 1, 50));
 	bHide = false;
 
 	//  Create Octree for testing.
@@ -194,8 +195,18 @@ void ofApp::drawAxis(ofVec3f location) {
 
 
 void ofApp::keyPressed(int key) {
+	const int OF_KEY_SPACE = 32;
 
 	switch (key) {
+	case OF_KEY_SPACE:
+	{
+		ThrustForce *up = new ThrustForce(ofVec3f(0, 1, 0), thrust);
+		sys.addForce(up);
+		break;
+	}
+
+
+
 	case 'B':
 	case 'b':
 		break;
@@ -246,6 +257,35 @@ void ofApp::keyPressed(int key) {
 		break;
 	case OF_KEY_DEL:
 		break;
+	case OF_KEY_UP:
+	{
+		ThrustForce *forward = new ThrustForce(landerParticle.heading(), thrust);
+		sys.addForce(forward);
+		break;
+	}
+	case OF_KEY_LEFT:
+	{
+		ofVec2f temp(landerParticle.heading().x, landerParticle.heading().z);
+		temp = temp.rotate(-90);
+		ThrustForce *left = new ThrustForce(ofVec3f(temp.x, 0, temp.y), thrust);
+		sys.addForce(left);
+
+		break;
+	}
+	case OF_KEY_RIGHT: {
+
+		ofVec2f temp(landerParticle.heading().x, landerParticle.heading().z);
+		temp = temp.rotate(90);
+		ThrustForce *right = new ThrustForce(ofVec3f(temp.x, 0, temp.y), thrust);
+		sys.addForce(right);
+		break;
+	}
+	case OF_KEY_DOWN:
+	{
+		ThrustForce *backward = new ThrustForce(landerParticle.heading() * -1, thrust);
+		sys.addForce(backward);
+		break;
+	}
 	default:
 		break;
 	}

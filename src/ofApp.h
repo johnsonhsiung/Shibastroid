@@ -11,7 +11,9 @@
 
 class ofApp : public ofBaseApp{
 
+
 	public:
+		
 		float timeLastFrame;
 
 		void setup();
@@ -54,6 +56,7 @@ class ofApp : public ofBaseApp{
 
 
 		ofxIntSlider numLevels;
+		ofxFloatSlider thrust; 
 		ofxPanel gui;
 
 		bool bAltKeyDown;

@@ -79,4 +79,8 @@ float Particle::age() {
 	return (ofGetElapsedTimeMillis() - birthtime)/1000.0;
 }
 
+ofVec3f Particle::heading() {
+	return glm::normalize(glm::vec3(sin(glm::radians(rotation + 180)), 0, cos(glm::radians(rotation + 180))));
+}
+
 

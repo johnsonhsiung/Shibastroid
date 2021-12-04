@@ -135,3 +135,19 @@ void ImpulseRingForce::updateForce(Particle * particle) {
 }
 
 
+ThrustForce::ThrustForce(const ofVec3f &dir, float magnitude) {
+	applyOnce = true;
+	this->magnitude = magnitude;
+	this->dir = dir; 
+}
+void ThrustForce::updateForce(Particle * particle) {
+
+	// we basically create a random direction for each particle
+	// the force is only added once after it is triggered.
+	//
+	particle->forces += (dir.getNormalized() * magnitude);
+}
+
+
+
+

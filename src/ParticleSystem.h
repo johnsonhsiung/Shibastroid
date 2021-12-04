@@ -60,3 +60,12 @@ public:
     ImpulseRingForce(float magnitude);
     void updateForce(Particle *);
 };
+
+class ThrustForce : public ParticleForce {
+	float magnitude;
+	ofVec3f dir; 
+
+public:
+	ThrustForce(const ofVec3f &dir, float magnitude);
+	void updateForce(Particle *);
+};
