@@ -80,4 +80,5 @@ class ofApp : public ofBaseApp{
 		ParticleSystem sys; 
 
 		GravityForce *gravityForce; 
+		TurbulenceForce *turbulenceForce; 
 };
