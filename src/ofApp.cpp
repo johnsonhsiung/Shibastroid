@@ -516,6 +516,9 @@ void ofApp::mouseReleased(int x, int y, int button) {
 // Set the camera to use the selected point as it's new target
 //  
 void ofApp::setCameraTarget() {
+	if (theCam != &cam) return;
+	theCam->lookAt(sys.particles[0].pos);
+
 
 }
 
