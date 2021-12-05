@@ -27,6 +27,8 @@ void ofApp::setup() {
 	bLanderLoaded = false;
 	bTerrainSelected = true;
 	//	ofSetWindowShape(1024, 768);
+
+	//set up easy cam 
 	cam.setDistance(10);
 	cam.setNearClip(.1);
 	cam.setFov(65.5);   // approx equivalent to 28mm in 35mm format
@@ -35,6 +37,11 @@ void ofApp::setup() {
 	ofEnableSmoothing();
 	ofEnableDepthTest();
 	theCam = &cam;
+
+	//set up tracking cam
+	trackingCam.setPosition(100, 100, 100); 
+
+
 
 	// setup rudimentary lighting 
 	//
@@ -104,6 +111,10 @@ void ofApp::update() {
 		landerRayIntersectOctree(landerIntersectPoint);
 		timeLastFrameIntersect = ofGetElapsedTimef(); 
 	}
+
+	//update trackingCam
+	if (theCam == &trackingCam)
+	trackingCam.lookAt(sys.particles[0].pos);
 	
 }
 //--------------------------------------------------------------
@@ -341,6 +352,17 @@ void ofApp::keyReleased(int key) {
 		break;
 	case OF_KEY_SHIFT:
 		break;
+	case OF_KEY_F1:
+		theCam = &cam; 
+		break;
+	case OF_KEY_F2:
+		theCam = &trackingCam;
+		break;
+
+	case OF_KEY_F3:
+		theCam = &onboardCam;
+		break;
+	case OF_KEY_F4:
 	default:
 		break;
 
