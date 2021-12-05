@@ -20,6 +20,7 @@
 //
 void ofApp::setup() {
 
+	
 	bDisplayPoints = false;
 	bAltKeyDown = false;
 	bCtrlKeyDown = false;
@@ -30,9 +31,10 @@ void ofApp::setup() {
 	cam.setNearClip(.1);
 	cam.setFov(65.5);   // approx equivalent to 28mm in 35mm format
 	ofSetVerticalSync(true);
-	cam.disableMouseInput();
+	cam.enableMouseInput();
 	ofEnableSmoothing();
 	ofEnableDepthTest();
+	theCam = &cam;
 
 	// setup rudimentary lighting 
 	//
@@ -113,7 +115,7 @@ void ofApp::draw() {
 	if (!bHide) gui.draw();
 	glDepthMask(true);
 
-	cam.begin();
+	theCam->begin();
 	ofPushMatrix();
 	ofEnableLighting();              // shaded mode
 	mars.drawFaces();
@@ -160,13 +162,13 @@ void ofApp::draw() {
 	//
 	if (pointSelected) {
 		ofVec3f p = octree.mesh.getVertex(selectedNode.points[0]);
-		ofVec3f d = p - cam.getPosition();
+		ofVec3f d = p - theCam->getPosition();
 		ofSetColor(ofColor::lightGreen);
 		ofDrawSphere(p, .02 * d.length());
 	}
 
 	ofPopMatrix();
-	cam.end();
+	theCam->end();
 
 	if (bDrawAltitude) {
 		string str;
@@ -224,8 +226,6 @@ void ofApp::keyPressed(int key) {
 		break;
 	case 'C':
 	case 'c':
-		if (cam.getMouseInputEnabled()) cam.disableMouseInput();
-		else cam.enableMouseInput();
 		break;
 	case 'F':
 	case 'f':
@@ -242,7 +242,7 @@ void ofApp::keyPressed(int key) {
 		bDisplayOctree = !bDisplayOctree;
 		break;
 	case 'r':
-		cam.reset();
+		
 		break;
 	case 's':
 		savePicture();
