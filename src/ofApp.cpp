@@ -41,7 +41,8 @@ void ofApp::setup() {
 	//set up tracking cam
 	trackingCam.setPosition(100, 100, 100); 
 
-
+	//set up onboard cam 
+	onboardCam.setNearClip(0.1);
 
 	// setup rudimentary lighting 
 	//
@@ -114,7 +115,15 @@ void ofApp::update() {
 
 	//update trackingCam
 	if (theCam == &trackingCam)
-	trackingCam.lookAt(sys.particles[0].pos);
+		trackingCam.lookAt(sys.particles[0].pos);
+	else if (theCam == &onboardCam)
+	{
+		ofVec3f currentLanderPos = sys.particles[0].pos; 
+		onboardCam.setPosition(currentLanderPos);
+		ofVec3f downwardSlant(0, -1, 0);
+		onboardCam.lookAt(currentLanderPos + sys.particles[0].heading() +downwardSlant);
+	}
+		
 	
 }
 //--------------------------------------------------------------
