@@ -15,6 +15,7 @@ class ofApp : public ofBaseApp{
 	public:
 		
 		float timeLastFrame;
+		float timeLastFrameIntersect;
 
 		void setup();
 		void update();
@@ -40,6 +41,7 @@ class ofApp : public ofBaseApp{
 		void setCameraTarget();
 		bool mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm, ofVec3f &point);
 		bool raySelectWithOctree(ofVec3f &pointRet);
+		bool landerRayIntersectOctree(ofVec3f &pointRet);
 		glm::vec3 ofApp::getMousePointOnPlane(glm::vec3 p , glm::vec3 n);
 
 		ofEasyCam cam;
@@ -57,6 +59,7 @@ class ofApp : public ofBaseApp{
 
 		ofxIntSlider numLevels;
 		ofxFloatSlider thrust; 
+		ofxFloatSlider intersectDeltaTime;
 		ofxPanel gui;
 
 		bool bAltKeyDown;
@@ -68,12 +71,15 @@ class ofApp : public ofBaseApp{
 		bool bDisplayLeafNodes = false;
 		bool bDisplayOctree = false;
 		bool bDisplayBBoxes = false;
+		bool bDrawAltitude = false; 
 		
 		bool bLanderLoaded;
 		bool bTerrainSelected;
 	
 		ofVec3f selectedPoint;
 		ofVec3f intersectPoint;
+		ofVec3f landerIntersectPoint;
+	
 
 		vector<Box> bboxList;
 

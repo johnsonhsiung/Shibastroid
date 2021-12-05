@@ -46,6 +46,8 @@ void ofApp::setup() {
 	gui.setup();
 	gui.add(numLevels.setup("Number of Octree Levels", 1, 1, 10));
 	gui.add(thrust.setup("Thrust", 5, 1, 50));
+	gui.add(intersectDeltaTime.setup("Time between checks for intersects", 2, 0.2, 1000000));
+
 	bHide = false;
 
 	//  Create Octree for testing.
@@ -91,9 +93,16 @@ void ofApp::update() {
 	float deltaTime = ofGetElapsedTimef() - timeLastFrame;
 
 	sys.update(deltaTime);
-	cout << "after update: " << sys.particles[0].rotation << "\n" << endl;
 
 	timeLastFrame = ofGetElapsedTimef();
+
+	float deltaLanderRayIntersectTime = ofGetElapsedTimef() - timeLastFrameIntersect; 
+	if (bDrawAltitude && (deltaLanderRayIntersectTime > intersectDeltaTime)) {
+		cout << deltaLanderRayIntersectTime << "\n" << endl; 
+		landerRayIntersectOctree(landerIntersectPoint);
+		timeLastFrameIntersect = ofGetElapsedTimef(); 
+	}
+	
 }
 //--------------------------------------------------------------
 void ofApp::draw() {
@@ -128,15 +137,8 @@ void ofApp::draw() {
 			}
 		}**/
 	}
-	
-
-
 
 	
-
-
-
-
 
 	// recursively draw octree
 	//
@@ -165,6 +167,13 @@ void ofApp::draw() {
 
 	ofPopMatrix();
 	cam.end();
+
+	if (bDrawAltitude) {
+		string str;
+		str += "Altitude: " + std::to_string(sys.particles[0].pos.y - landerIntersectPoint.y);
+		ofSetColor(ofColor::white);
+		ofDrawBitmapString(str, ofGetWindowWidth() - 170, 25);
+	}
 }
 
 
@@ -211,6 +220,7 @@ void ofApp::keyPressed(int key) {
 
 	case 'B':
 	case 'b':
+		bDrawAltitude = !bDrawAltitude; 
 		break;
 	case 'C':
 	case 'c':
@@ -405,6 +415,19 @@ bool ofApp::raySelectWithOctree(ofVec3f &pointRet) {
 		pointRet = octree.mesh.getVertex(selectedNode.points[0]);
 	}
 	return pointSelected;
+}
+
+bool ofApp::landerRayIntersectOctree(ofVec3f &pointRet) {
+	ofVec3f rayPoint = sys.particles[0].pos; 
+	ofVec3f rayDir(0, -1, 0);
+	Ray ray = Ray(Vector3(rayPoint.x, rayPoint.y, rayPoint.z),
+		Vector3(rayDir.x, rayDir.y, rayDir.z));
+	TreeNode intersectNode; 
+	if (octree.intersect(ray, octree.root, intersectNode)) {
+		pointRet = octree.mesh.getVertex(intersectNode.points[0]);
+		return true; 
+	}
+	return false; 
 }
 
 

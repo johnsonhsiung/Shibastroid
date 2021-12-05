@@ -58,7 +58,6 @@ void ParticleSystem::update(float deltaTime) {
 	//
 	for (int i = 0; i < particles.size(); i++)
 		particles[i].integrate(deltaTime);
-	cout << "after integrate: " << particles[0].rotation << "\n" << endl;
 
 }
 
