@@ -88,7 +88,7 @@ class ofApp : public ofBaseApp{
 		
 		bool bLanderLoaded;
 		bool bTerrainSelected;
-	
+		
 	
 		ofVec3f selectedPoint;
 		ofVec3f intersectPoint;
@@ -105,4 +105,8 @@ class ofApp : public ofBaseApp{
 		GravityForce *gravityForce; 
 		TurbulenceForce *turbulenceForce; 
 		ImpulseForce *impulseForce; 
+
+		ofSoundPlayer soundPlayer; 
+
+		ofImage backgroundImage; 
 };

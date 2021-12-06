@@ -20,7 +20,7 @@
 //
 void ofApp::setup() {
 
-	
+
 	bDisplayPoints = false;
 	bAltKeyDown = false;
 	bCtrlKeyDown = false;
@@ -336,6 +336,8 @@ void ofApp::keyPressed(int key) {
 	switch (key) {
 	case OF_KEY_SPACE:
 	{
+		if (!soundPlayer.isPlaying() && soundPlayer.load("sounds/rocket.wav"))
+			soundPlayer.play();
 		if (!sys.isForcesActive) {
 			sys.isForcesActive = true;
 		}
@@ -459,7 +461,10 @@ void ofApp::togglePointsDisplay() {
 void ofApp::keyReleased(int key) {
 
 	switch (key) {
-	
+	case 32:
+		if(soundPlayer.isLoaded())
+		soundPlayer.stop();
+		break;
 	case OF_KEY_ALT:
 		cam.disableMouseInput();
 		bAltKeyDown = false;
