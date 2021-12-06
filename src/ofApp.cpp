@@ -345,6 +345,8 @@ void ofApp::keyPressed(int key) {
 		break;
 	case 'C':
 	case 'c':
+		if (cam.getMouseInputEnabled()) cam.disableMouseInput();
+		else cam.enableMouseInput();
 		break;
 	case 'F':
 	case 'f':
@@ -496,7 +498,6 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 	// if moving camera, don't allow mouse interaction
 //
-	if (cam.getMouseInputEnabled()) return;
 
 	// if rover is loaded, test for selection
 	//
@@ -504,7 +505,8 @@ void ofApp::mousePressed(int x, int y, int button) {
 		glm::vec3 origin = cam.getPosition();
 		glm::vec3 mouseWorld = cam.screenToWorld(glm::vec3(mouseX, mouseY, 0));
 		glm::vec3 mouseDir = glm::normalize(mouseWorld - origin);
-
+		
+		Particle landerParticle = sys.particles[0];
 		ofVec3f min = landerParticle.lander.getSceneMin() + landerParticle.lander.getPosition();
 		ofVec3f max = landerParticle.lander.getSceneMax() + landerParticle.lander.getPosition();
 
@@ -570,45 +572,27 @@ void ofApp::mouseDragged(int x, int y, int button) {
 	// if moving camera, don't allow mouse interaction
 	//
 	if (cam.getMouseInputEnabled()) return;
-	/*
+	
 	if (bInDrag) {
-
-		glm::vec3 landerPos = lander.getPosition();
+		sys.isForcesActive = false;
+		glm::vec3 landerPos = sys.particles[0].lander.getPosition();
 
 		glm::vec3 mousePos = getMousePointOnPlane(landerPos, cam.getZAxis());
 		glm::vec3 delta = mousePos - mouseLastPos;
 	
 		landerPos += delta;
-		lander.setPosition(landerPos.x, landerPos.y, landerPos.z);
+		sys.particles[0].lander.setPosition(landerPos.x, landerPos.y, landerPos.z);
+		sys.particles[0].pos = ofVec3f(landerPos.x, landerPos.y, landerPos.z);
 		mouseLastPos = mousePos;
-
-		ofVec3f min = lander.getSceneMin() + lander.getPosition();
-		ofVec3f max = lander.getSceneMax() + lander.getPosition();
-
-		Box bounds = Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
-
-		colBoxList.clear();
-		octree.intersect(bounds, octree.root, colBoxList);
-	
-
-		/*if (bounds.overlap(testBox)) {
-			cout << "overlap" << endl;
-		}
-		else {
-			cout << "OK" << endl;
-		}
 
 
 	}
-	else {
-		ofVec3f p;
-		raySelectWithOctree(p);
-	}*/
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button) {
 	bInDrag = false;
+	sys.isForcesActive = true;
 }
 
 
