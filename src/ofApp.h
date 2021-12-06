@@ -30,17 +30,11 @@ class ofApp : public ofBaseApp{
 		void mouseEntered(int x, int y);
 		void mouseExited(int x, int y);
 		void windowResized(int w, int h);
-		void dragEvent2(ofDragInfo dragInfo);
-		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		void drawAxis(ofVec3f);
-		void initLightingAndMaterials();
 		void savePicture();
 		void togglePointsDisplay();
-		void toggleSelectTerrain();
 		void setCameraTarget();
 		bool mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm, ofVec3f &point);
-		bool raySelectWithOctree(ofVec3f &pointRet);
 		bool landerRayIntersectOctree(ofVec3f &pointRet);
 		glm::vec3 ofApp::getMousePointOnPlane(glm::vec3 p , glm::vec3 n);
 
@@ -75,19 +69,17 @@ class ofApp : public ofBaseApp{
 		ofxPanel gui;
 		ofxFloatSlider spotlightScale;
 
-		bool bAltKeyDown;
-		bool bCtrlKeyDown;
-		bool bDisplayPoints;
-		bool bPointSelected;
-		bool bHide;
+
+	
+		bool bDisplayPoints = false;
 		bool pointSelected = false;
 		bool bDisplayLeafNodes = false;
 		bool bDisplayOctree = false;
 		bool bDisplayBBoxes = false;
 		bool bDrawAltitude = false; 
-		
-		bool bLanderLoaded;
-		bool bTerrainSelected;
+		bool bDrawGui = false; 
+		bool bLanderLoaded = false;
+
 		
 	
 		ofVec3f selectedPoint;
