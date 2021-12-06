@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<group>
+	<Number_of_Octree_Levels>1</Number_of_Octree_Levels>
+	<Thrust>22.805</Thrust>
+	<Time_between_checks_for_intersects>2</Time_between_checks_for_intersects>
+	<Keylight_pos>5, 5, 5</Keylight_pos>
+	<Filllight_pos>-5, 5, 5</Filllight_pos>
+	<rimLight_pos>0, 5, -7</rimLight_pos>
+</group>

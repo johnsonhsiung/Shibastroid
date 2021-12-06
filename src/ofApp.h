@@ -48,6 +48,11 @@ class ofApp : public ofBaseApp{
 		ofCamera *theCam; 
 		ofCamera trackingCam; 
 		ofCamera onboardCam;
+		ofCamera shibaCam; 
+
+		ofLight keyLight, fillLight, rimLight; 
+
+		ofxVec3Slider keyLightPosition, fillLightPosition, rimLightPosition; 
 
 
 		ofxAssimpModelLoader mars;

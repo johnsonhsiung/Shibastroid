@@ -46,7 +46,42 @@ void ofApp::setup() {
 
 	// setup rudimentary lighting 
 	//
-	initLightingAndMaterials();
+	keyLight.setup();
+	keyLight.enable();
+	keyLight.setAreaLight(1, 1);
+	keyLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
+	keyLight.setDiffuseColor(ofFloatColor(1, 1, 1));
+	keyLight.setSpecularColor(ofFloatColor(1, 1, 1));
+
+	keyLight.rotate(45, ofVec3f(0, 1, 0));
+	keyLight.rotate(-45, ofVec3f(1, 0, 0));
+	keyLight.setPosition(5, 5, 5);
+
+	fillLight.setup();
+	fillLight.enable();
+	fillLight.setSpotlight();
+	fillLight.setScale(.05);
+	fillLight.setSpotlightCutOff(15);
+	fillLight.setAttenuation(2, .001, .001);
+	fillLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
+	fillLight.setDiffuseColor(ofFloatColor(1, 1, 1));
+	fillLight.setSpecularColor(ofFloatColor(1, 1, 1));
+	fillLight.rotate(-10, ofVec3f(1, 0, 0));
+	fillLight.rotate(-45, ofVec3f(0, 1, 0));
+	fillLight.setPosition(-5, 5, 5);
+
+	rimLight.setup();
+	rimLight.enable();
+	rimLight.setSpotlight();
+	rimLight.setScale(.05);
+	rimLight.setSpotlightCutOff(30);
+	rimLight.setAttenuation(.2, .001, .001);
+	rimLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
+	rimLight.setDiffuseColor(ofFloatColor(1, 1, 1));
+	rimLight.setSpecularColor(ofFloatColor(1, 1, 1));
+	rimLight.rotate(180, ofVec3f(0, 1, 0));
+	rimLight.setPosition(0, 5, -7);
+
 
 	mars.loadModel("geo/mars-low-5x-v2.obj");
 	mars.setScaleNormalization(false);
@@ -57,6 +92,10 @@ void ofApp::setup() {
 	gui.add(numLevels.setup("Number of Octree Levels", 1, 1, 10));
 	gui.add(thrust.setup("Thrust", 5, 1, 50));
 	gui.add(intersectDeltaTime.setup("Time between checks for intersects", 2, 0.2, 1000000));
+	gui.add(keyLightPosition.setup("Keylight pos", ofVec3f(5, 5, 5), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
+	gui.add(fillLightPosition.setup("Filllight pos", ofVec3f(-5, 5, 5), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
+	gui.add(rimLightPosition.setup("rimLight pos", ofVec3f(0, 5, -7), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
+
 
 	bHide = false;
 
@@ -75,7 +114,7 @@ void ofApp::setup() {
 
 	testBox = Box(Vector3(3, 3, 0), Vector3(5, 5, 2));
 
-	if (landerParticle.load("geo/lander.obj")) {
+	if (landerParticle.load("geo/Shib Ship.obj")) {
 		bboxList.clear();
 		for (int i = 0; i < landerParticle.lander.getMeshCount(); i++) {
 			bboxList.push_back(Octree::meshBounds(landerParticle.lander.getMesh(i)));
@@ -86,7 +125,7 @@ void ofApp::setup() {
 		
 	}
 	else {
-		cout << "Can't load lander.obj";
+		cout << "Can't load obj";
 	}
 	gravityForce = new GravityForce(ofVec3f(0, -1.6, 0));
 	sys.addForce(gravityForce);
@@ -123,6 +162,16 @@ void ofApp::update() {
 		ofVec3f downwardSlant(0, -1, 0);
 		onboardCam.lookAt(currentLanderPos + sys.particles[0].heading() +downwardSlant);
 	}
+	else if (theCam == &shibaCam)
+	{
+		ofVec3f currentLanderPos = sys.particles[0].pos;
+		shibaCam.setPosition(currentLanderPos.x, currentLanderPos.y + 20, currentLanderPos.z); 
+		shibaCam.lookAt(currentLanderPos);
+	}
+	keyLight.setPosition(keyLightPosition);
+	rimLight.setPosition(rimLightPosition);
+	fillLight.setPosition(fillLightPosition);
+
 		
 	
 }
@@ -165,6 +214,9 @@ void ofApp::draw() {
 	// recursively draw octree
 	//
 	ofDisableLighting();
+	rimLight.draw();
+	fillLight.draw();
+	keyLight.draw();
 	int level = 0;
 	//	ofNoFill();
 
@@ -372,6 +424,7 @@ void ofApp::keyReleased(int key) {
 		theCam = &onboardCam;
 		break;
 	case OF_KEY_F4:
+		theCam = &shibaCam;
 	default:
 		break;
 
