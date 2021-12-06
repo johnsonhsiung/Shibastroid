@@ -59,28 +59,30 @@ void ofApp::setup() {
 
 	fillLight.setup();
 	fillLight.enable();
-	fillLight.setSpotlight();
+
 	fillLight.setScale(.05);
-	fillLight.setSpotlightCutOff(15);
-	fillLight.setAttenuation(2, .001, .001);
+	//fillLight.setSpotlightCutOff(15);
+
 	fillLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
 	fillLight.setDiffuseColor(ofFloatColor(1, 1, 1));
 	fillLight.setSpecularColor(ofFloatColor(1, 1, 1));
 	fillLight.rotate(-10, ofVec3f(1, 0, 0));
 	fillLight.rotate(-45, ofVec3f(0, 1, 0));
 	fillLight.setPosition(-5, 5, 5);
+	fillLight.setAreaLight(1, 1);
 
 	rimLight.setup();
 	rimLight.enable();
-	rimLight.setSpotlight();
+
 	rimLight.setScale(.05);
-	rimLight.setSpotlightCutOff(30);
-	rimLight.setAttenuation(.2, .001, .001);
+	//rimLight.setSpotlightCutOff(30);
+
 	rimLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
 	rimLight.setDiffuseColor(ofFloatColor(1, 1, 1));
 	rimLight.setSpecularColor(ofFloatColor(1, 1, 1));
 	rimLight.rotate(180, ofVec3f(0, 1, 0));
 	rimLight.setPosition(0, 5, -7);
+	rimLight.setAreaLight(1, 1);
 
 
 	mars.loadModel("geo/Terrain.obj");
@@ -90,15 +92,16 @@ void ofApp::setup() {
 	//
 	gui.setup();
 	gui.add(numLevels.setup("Number of Octree Levels", 1, 1, 10));
-	gui.add(thrust.setup("Thrust", 5, 1, 50));
+	gui.add(gravity.setup("Gravity", 5, 0, 20));
+	gui.add(thrust.setup("Thrust", 50, 1, 150));
 	gui.add(intersectDeltaTime.setup("Time between checks for intersects", 0.5, 0.2, 1000000));
-	gui.add(keyLightPosition.setup("Keylight pos", ofVec3f(5, 5, 5), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
-	gui.add(fillLightPosition.setup("Filllight pos", ofVec3f(-5, 5, 5), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
-	gui.add(rimLightPosition.setup("rimLight pos", ofVec3f(0, 5, -7), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
+	gui.add(keyLightPosition.setup("Keylight pos", ofVec3f(-1000, -102, 5), ofVec3f(-1000, -1000, -1000), ofVec3f(1000, 1000, 1000)));
+	gui.add(fillLightPosition.setup("Filllight pos", ofVec3f(1000, -143, 5), ofVec3f(-1000, -1000, -1000), ofVec3f(1000, 1000, 1000)));
+	gui.add(rimLightPosition.setup("rimLight pos", ofVec3f(143, 204, 755), ofVec3f(-1000, -1000, -1000), ofVec3f(1000, 1000, 1000)));
+
 
 	gui.add(restitution.setup("Bounciness", 0.3, 0.0, 1.0));
 
-	gui.add(normalOfPointScaling.setup("Normal Scaling", 3.0, 1.0, 10.0));
 
 
 	bHide = false;
@@ -134,7 +137,7 @@ void ofApp::setup() {
 	}
 
 	//add forces 
-	gravityForce = new GravityForce(ofVec3f(0, -1.6, 0));
+	gravityForce = new GravityForce(ofVec3f(0, -5, 0));
 	sys.addForce(gravityForce);
 
 	turbulenceForce = new TurbulenceForce(ofVec3f(-6.0, -6.0, -6.0), ofVec3f(6.0, 6.0, 6.0));
@@ -182,7 +185,7 @@ void ofApp::update() {
 
 	
 	
-
+	
 	//Check collisions if altitude is between the y-velocity. It gets laggy if we check all the time. Now it's only laggy sometimes
 	if (landerAltitude < (currentLander.velocity.y * -deltaTime && landerAltitude > (currentLander.velocity.y * deltaTime))) {
 		ofVec3f min = currentLander.lander.getSceneMin() + currentLander.lander.getPosition();
@@ -192,29 +195,33 @@ void ofApp::update() {
 		octree.intersect(bounds, octree.root, colBoxList);
 		
 		if (colBoxList.size() != 0) {
-			//not sure how to get the normal of the contact point. Can you help with this part? 
-			//We need the normal of that point and it takes in an index of the point to get it
-			//I changed colBoxList to be a vector of treeNodes so we can get the indexes, but not sure what to do after that. 
-			cout << landerAltitude << "\n" << endl;
-			float scale = normalOfPointScaling;
-			if (currentLander.velocity.y < 1.0) {
+	
+			cout << currentLander.velocity.y << "\n" << endl;
+
+			/*if (currentLander.velocity.y > -1.0) {
 				sys.isForcesActive = false; 
+				//currently this happens everytime because after applying impulse force, the velocity slows down
 			}
 			else {
-				impulseForce = new ImpulseForce(restitution, currentLander.velocity, octree.mesh.getNormal(colBoxList[0].points[0]));
-				sys.addForce(impulseForce);
-			}
+				
+				
+			}*/
+			impulseForce = new ImpulseForce(restitution, currentLander.velocity, octree.mesh.getNormal(colBoxList[0].points[0]));
+			sys.addForce(impulseForce);
 			
 		}
 
 	}
-
+	
 
 
 	//update light positions based on sliders 
 	keyLight.setPosition(keyLightPosition);
 	rimLight.setPosition(rimLightPosition);
 	fillLight.setPosition(fillLightPosition);
+	rimLight.setScale(spotlightScale);
+	fillLight.setScale(spotlightScale);
+
 
 		
 	

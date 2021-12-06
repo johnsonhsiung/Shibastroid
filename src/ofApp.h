@@ -71,8 +71,9 @@ class ofApp : public ofBaseApp{
 		ofxFloatSlider thrust; 
 		ofxFloatSlider intersectDeltaTime;
 		ofxFloatSlider restitution;
-		ofxFloatSlider normalOfPointScaling;
+		ofxFloatSlider gravity; 
 		ofxPanel gui;
+		ofxFloatSlider spotlightScale;
 
 		bool bAltKeyDown;
 		bool bCtrlKeyDown;
@@ -87,6 +88,7 @@ class ofApp : public ofBaseApp{
 		
 		bool bLanderLoaded;
 		bool bTerrainSelected;
+	
 	
 		ofVec3f selectedPoint;
 		ofVec3f intersectPoint;

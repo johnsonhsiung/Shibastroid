@@ -166,9 +166,7 @@ ImpulseForce::ImpulseForce(float restitution, ofVec3f velocity, ofVec3f normal) 
 }
 void ImpulseForce::updateForce(Particle * particle) {
 
-	// we basically create a random direction for each particle
-	// the force is only added once after it is triggered.
-	//
+
 	particle->forces += (resitituion + 1) * (-velocity.dot(normal) * normal); 
 }
 
