@@ -67,10 +67,7 @@ class ofApp : public ofBaseApp{
 		ofxFloatSlider restitution;
 		ofxFloatSlider gravity; 
 		ofxPanel gui;
-		ofxFloatSlider spotlightScale;
 
-
-	
 		bool bDisplayPoints = false;
 		bool pointSelected = false;
 		bool bDisplayLeafNodes = false;

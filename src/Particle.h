@@ -18,13 +18,9 @@ public:
 	float angAcceleration; 
 	float	damping;
 	float   mass;
-	float   lifespan;
-	float   radius;
-	float   birthtime;
 	float rotation; 
 	void    integrate(float deltaTime);
 	void    draw();
-	float   age();        // sec
 	bool load(string);
 	ofColor color;
 	ofxAssimpModelLoader lander; 

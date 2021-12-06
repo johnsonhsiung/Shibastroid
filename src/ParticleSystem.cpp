@@ -15,12 +15,6 @@ void ParticleSystem::remove(int i) {
 	particles.erase(particles.begin() + i);
 }
 
-void ParticleSystem::setLifespan(float l) {
-	for (int i = 0; i < particles.size(); i++) {
-		particles[i].lifespan = l;
-	}
-}
-
 void ParticleSystem::reset() {
 	for (int i = 0; i < forces.size(); i++) {
 		forces[i]->applied = false;
@@ -146,10 +140,6 @@ ThrustForce::ThrustForce(const ofVec3f &dir, float magnitude, bool isAngular) {
 	this->isAngular = isAngular; 
 }
 void ThrustForce::updateForce(Particle * particle) {
-
-	// we basically create a random direction for each particle
-	// the force is only added once after it is triggered.
-	//
 	if (isAngular) 	particle->angularForces += magnitude;
 
 	else

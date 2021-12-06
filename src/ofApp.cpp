@@ -452,8 +452,6 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 }
 
-
-
 bool ofApp::landerRayIntersectOctree(ofVec3f &pointRet) {
 	ofVec3f rayPoint = sys.particles[0].pos; 
 	ofVec3f rayDir(0, -1, 0);

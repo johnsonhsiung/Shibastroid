@@ -10,12 +10,8 @@ Particle::Particle() {
 	pos.set(0.0, 20.0, 0.0);
 	forces.set(0.0, 0.0, 0.0);
 	angularForces = 0.0;
-	lifespan = 5;
-	birthtime = 0;
-	radius = .1;
 	damping = .99;
 	mass = 1;
-	color = ofColor::aquamarine;
 	rotation = 0.0;
 }
 
@@ -81,12 +77,6 @@ bool Particle::load(string path) {
 		return false; 
 	}
 
-}
-
-//  return age in seconds
-//
-float Particle::age() {
-	return (ofGetElapsedTimeMillis() - birthtime)/1000.0;
 }
 
 ofVec3f Particle::heading() {
