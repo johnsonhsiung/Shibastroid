@@ -7,7 +7,7 @@ Particle::Particle() {
 	//
 	velocity.set(0.0, 0.0, 0.0);
 	acceleration.set(0.0, 0.0, 0.0);
-	pos.set(0.0, 0.0, 0.0);
+	pos.set(0.0, 20.0, 0.0);
 	forces.set(0.0, 0.0, 0.0);
 	angularForces = 0.0;
 	lifespan = 5;
@@ -90,7 +90,6 @@ float Particle::age() {
 }
 
 ofVec3f Particle::heading() {
-	cout << rotation << "\n" << endl;
 	return glm::normalize(glm::vec3(sin(glm::radians(rotation + 180)), 0, cos(glm::radians(rotation + 180))));
 }
 

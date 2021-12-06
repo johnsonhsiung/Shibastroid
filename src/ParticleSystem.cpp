@@ -27,9 +27,13 @@ void ParticleSystem::reset() {
 	}
 }
 
+void ParticleSystem::stopForces() {
+	isForcesActive = false; 
+}
+
 void ParticleSystem::update(float deltaTime) {
 	// check if empty and just return
-	if (particles.size() == 0) return;
+	if (particles.size() == 0 || !isForcesActive) return;
 
 
 	// check which particles have exceed their lifespan and delete
@@ -152,6 +156,20 @@ void ThrustForce::updateForce(Particle * particle) {
 	{
 		particle->forces += (dir.getNormalized() * magnitude);
 	}
+}
+
+ImpulseForce::ImpulseForce(float restitution, ofVec3f velocity, ofVec3f normal) {
+	applyOnce = true;
+	this->resitituion = resitituion;
+	this->velocity = velocity;
+	this->normal = normal;
+}
+void ImpulseForce::updateForce(Particle * particle) {
+
+	// we basically create a random direction for each particle
+	// the force is only added once after it is triggered.
+	//
+	particle->forces += (resitituion + 1) * (-velocity.dot(normal) * normal); 
 }
 
 

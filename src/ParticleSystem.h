@@ -11,7 +11,7 @@ class ParticleForce {
 protected:
 public:
 	bool applyOnce = false;
-	bool applied = false;
+	bool applied = false; 
 	virtual void updateForce(Particle *) = 0;
 };
 
@@ -25,8 +25,10 @@ public:
 	void reset();
 	int removeNear(const ofVec3f & point, float dist);
 	void draw();
+	void stopForces();
 	vector<Particle> particles;
 	vector<ParticleForce *> forces;
+	bool isForcesActive = true;
 };
 
 
@@ -35,6 +37,7 @@ public:
 //
 class GravityForce: public ParticleForce {
 	ofVec3f gravity;
+	
 public:
 	GravityForce(const ofVec3f & gravity);
 	void updateForce(Particle *);
@@ -68,5 +71,14 @@ class ThrustForce : public ParticleForce {
 
 public:
 	ThrustForce(const ofVec3f &dir, float magnitude, bool isAngular);
+	void updateForce(Particle *);
+};
+
+class ImpulseForce : public ParticleForce {
+	float resitituion;
+	ofVec3f velocity;
+	ofVec3f normal;
+public:
+	ImpulseForce(float restitution, ofVec3f velocity, ofVec3f normal);
 	void updateForce(Particle *);
 };

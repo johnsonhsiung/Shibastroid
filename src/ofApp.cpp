@@ -44,7 +44,7 @@ void ofApp::setup() {
 	//set up onboard cam 
 	onboardCam.setNearClip(0.1);
 
-	// setup rudimentary lighting 
+	// setup lighting, can change values once we finalize with sliders
 	//
 	keyLight.setup();
 	keyLight.enable();
@@ -83,7 +83,7 @@ void ofApp::setup() {
 	rimLight.setPosition(0, 5, -7);
 
 
-	mars.loadModel("geo/mars-low-5x-v2.obj");
+	mars.loadModel("geo/Terrain.obj");
 	mars.setScaleNormalization(false);
 
 	// create sliders for testing
@@ -91,10 +91,14 @@ void ofApp::setup() {
 	gui.setup();
 	gui.add(numLevels.setup("Number of Octree Levels", 1, 1, 10));
 	gui.add(thrust.setup("Thrust", 5, 1, 50));
-	gui.add(intersectDeltaTime.setup("Time between checks for intersects", 2, 0.2, 1000000));
+	gui.add(intersectDeltaTime.setup("Time between checks for intersects", 0.5, 0.2, 1000000));
 	gui.add(keyLightPosition.setup("Keylight pos", ofVec3f(5, 5, 5), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
 	gui.add(fillLightPosition.setup("Filllight pos", ofVec3f(-5, 5, 5), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
 	gui.add(rimLightPosition.setup("rimLight pos", ofVec3f(0, 5, -7), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
+
+	gui.add(restitution.setup("Bounciness", 0.3, 0.0, 1.0));
+
+	gui.add(normalOfPointScaling.setup("Normal Scaling", 3.0, 1.0, 10.0));
 
 
 	bHide = false;
@@ -114,6 +118,7 @@ void ofApp::setup() {
 
 	testBox = Box(Vector3(3, 3, 0), Vector3(5, 5, 2));
 
+	//load shiba 
 	if (landerParticle.load("geo/Shib Ship.obj")) {
 		bboxList.clear();
 		for (int i = 0; i < landerParticle.lander.getMeshCount(); i++) {
@@ -127,6 +132,8 @@ void ofApp::setup() {
 	else {
 		cout << "Can't load obj";
 	}
+
+	//add forces 
 	gravityForce = new GravityForce(ofVec3f(0, -1.6, 0));
 	sys.addForce(gravityForce);
 
@@ -140,34 +147,71 @@ void ofApp::setup() {
 //
 void ofApp::update() {
 	float deltaTime = ofGetElapsedTimef() - timeLastFrame;
-
+	//update all the forces on our shiba 
 	sys.update(deltaTime);
 
 	timeLastFrame = ofGetElapsedTimef();
+	Particle currentLander = sys.particles[0];
 
+	//draw the altitude, laggy if checks every frame, so updates based on a slider 
 	float deltaLanderRayIntersectTime = ofGetElapsedTimef() - timeLastFrameIntersect; 
 	if (bDrawAltitude && (deltaLanderRayIntersectTime > intersectDeltaTime)) {
-		cout << deltaLanderRayIntersectTime << "\n" << endl; 
+		ofVec3f landerIntersectPoint; 
 		landerRayIntersectOctree(landerIntersectPoint);
+		landerAltitude = currentLander.pos.y - landerIntersectPoint.y;
 		timeLastFrameIntersect = ofGetElapsedTimef(); 
 	}
 
-	//update trackingCam
+	//update cameras
 	if (theCam == &trackingCam)
-		trackingCam.lookAt(sys.particles[0].pos);
+		trackingCam.lookAt(currentLander.pos);
 	else if (theCam == &onboardCam)
 	{
-		ofVec3f currentLanderPos = sys.particles[0].pos; 
+		ofVec3f currentLanderPos = currentLander.pos;
 		onboardCam.setPosition(currentLanderPos);
 		ofVec3f downwardSlant(0, -1, 0);
-		onboardCam.lookAt(currentLanderPos + sys.particles[0].heading() +downwardSlant);
+		onboardCam.lookAt(currentLanderPos + currentLander.heading() +downwardSlant);
 	}
 	else if (theCam == &shibaCam)
 	{
-		ofVec3f currentLanderPos = sys.particles[0].pos;
+		ofVec3f currentLanderPos = currentLander.pos;
 		shibaCam.setPosition(currentLanderPos.x, currentLanderPos.y + 20, currentLanderPos.z); 
 		shibaCam.lookAt(currentLanderPos);
 	}
+
+
+	
+	
+
+	//Check collisions if altitude is between the y-velocity. It gets laggy if we check all the time. Now it's only laggy sometimes
+	if (landerAltitude < (currentLander.velocity.y * -deltaTime && landerAltitude > (currentLander.velocity.y * deltaTime))) {
+		ofVec3f min = currentLander.lander.getSceneMin() + currentLander.lander.getPosition();
+		ofVec3f max = currentLander.lander.getSceneMax() + currentLander.lander.getPosition();
+		Box bounds = Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
+		colBoxList.clear();
+		octree.intersect(bounds, octree.root, colBoxList);
+		
+		if (colBoxList.size() != 0) {
+			//not sure how to get the normal of the contact point. Can you help with this part? 
+			//We need the normal of that point and it takes in an index of the point to get it
+			//I changed colBoxList to be a vector of treeNodes so we can get the indexes, but not sure what to do after that. 
+			cout << landerAltitude << "\n" << endl;
+			float scale = normalOfPointScaling;
+			if (currentLander.velocity.y < 1.0) {
+				sys.isForcesActive = false; 
+			}
+			else {
+				impulseForce = new ImpulseForce(restitution, currentLander.velocity, octree.mesh.getNormal(colBoxList[0].points[0]));
+				sys.addForce(impulseForce);
+			}
+			
+		}
+
+	}
+
+
+
+	//update light positions based on sliders 
 	keyLight.setPosition(keyLightPosition);
 	rimLight.setPosition(rimLightPosition);
 	fillLight.setPosition(fillLightPosition);
@@ -244,7 +288,7 @@ void ofApp::draw() {
 
 	if (bDrawAltitude) {
 		string str;
-		str += "Altitude: " + std::to_string(sys.particles[0].pos.y - landerIntersectPoint.y);
+		str += "Altitude: " + std::to_string(landerAltitude);
 		ofSetColor(ofColor::white);
 		ofDrawBitmapString(str, ofGetWindowWidth() - 170, 25);
 	}
@@ -285,6 +329,9 @@ void ofApp::keyPressed(int key) {
 	switch (key) {
 	case OF_KEY_SPACE:
 	{
+		if (!sys.isForcesActive) {
+			sys.isForcesActive = true;
+		}
 		ThrustForce *up = new ThrustForce(ofVec3f(0, 1, 0), thrust, false);
 		sys.addForce(up);
 		break;

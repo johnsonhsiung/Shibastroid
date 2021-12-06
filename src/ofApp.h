@@ -59,7 +59,7 @@ class ofApp : public ofBaseApp{
 		ofLight light;
 		Box boundingBox, landerBounds;
 		Box testBox;
-		vector<Box> colBoxList;
+		vector<TreeNode> colBoxList;
 		bool bLanderSelected = false;
 		Octree octree;
 		TreeNode selectedNode;
@@ -70,6 +70,8 @@ class ofApp : public ofBaseApp{
 		ofxIntSlider numLevels;
 		ofxFloatSlider thrust; 
 		ofxFloatSlider intersectDeltaTime;
+		ofxFloatSlider restitution;
+		ofxFloatSlider normalOfPointScaling;
 		ofxPanel gui;
 
 		bool bAltKeyDown;
@@ -88,7 +90,7 @@ class ofApp : public ofBaseApp{
 	
 		ofVec3f selectedPoint;
 		ofVec3f intersectPoint;
-		ofVec3f landerIntersectPoint;
+		float landerAltitude;
 	
 
 		vector<Box> bboxList;
@@ -100,4 +102,5 @@ class ofApp : public ofBaseApp{
 
 		GravityForce *gravityForce; 
 		TurbulenceForce *turbulenceForce; 
+		ImpulseForce *impulseForce; 
 };

@@ -223,7 +223,7 @@ bool Octree::intersect(const Ray &ray, const TreeNode & node, TreeNode & nodeRtn
 	return false;
 }
 
-bool Octree::intersect(const Box &box, TreeNode & node, vector<Box> & boxListRtn)
+bool Octree::intersect(const Box &box, TreeNode & node, vector<TreeNode> & boxListRtn)
 {
 	bool overlap = node.box.overlap(box);
 
@@ -234,7 +234,7 @@ bool Octree::intersect(const Box &box, TreeNode & node, vector<Box> & boxListRtn
 		//Only return true when the box overlaps a leaf node
 		if (isLeaf)
 		{
-			boxListRtn.push_back(node.box);
+			boxListRtn.push_back(node);
 			return true;
 		}
 		//If the box overlaps with an intermediate node, test all children
@@ -252,6 +252,8 @@ bool Octree::intersect(const Box &box, TreeNode & node, vector<Box> & boxListRtn
 
 	return false;
 }
+
+
 
 //Interpolate between two colors
 ofColor Octree::interpColor(ofColor color1, ofColor color2, float factor)
