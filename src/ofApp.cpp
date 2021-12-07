@@ -34,6 +34,9 @@ void ofApp::setup() {
 	//set up onboard cam 
 	onboardCam.setNearClip(0.1);
 
+	//set up shiba cam
+	shibaCam.setNearClip(0.1);
+
 	// setup lighting, can change values once we finalize with sliders
 	//
 	keyLight.setup();
