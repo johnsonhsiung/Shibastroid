@@ -217,11 +217,8 @@ void ofApp::update() {
 void ofApp::draw() {
 
 	ofBackground(ofColor::black);
-
-	glDepthMask(false);
-	//might have to draw background image in here?
-	if (bDrawGui) gui.draw();
-	glDepthMask(true);
+	ofEnableDepthTest();
+	ofEnableLighting();
 
 	theCam->begin();
 	ofPushMatrix();
@@ -235,6 +232,7 @@ void ofApp::draw() {
 	// recursively draw octree
 	//
 	ofDisableLighting();
+	ofDisableDepthTest();
 	int level = 0;
 	//	ofNoFill();
 
@@ -251,6 +249,11 @@ void ofApp::draw() {
 
 	ofPopMatrix();
 	theCam->end();
+
+	glDepthMask(false);
+	//might have to draw background image in here?
+	if (bDrawGui) gui.draw();
+	glDepthMask(true);
 
 	if (bDrawAltitude) {
 		string str;
