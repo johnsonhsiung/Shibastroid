@@ -183,9 +183,21 @@ void ofApp::update() {
 				
 			}*/
 			//this force isn't enough to make it bounce up, even when i multiplied it by -gravity. Can check ImpulseForce class in particle system. 
-			impulseForce = new ImpulseForce(restitution, currentLander.velocity, octree.mesh.getNormal(colBoxList[0].points[0]));
-			sys.addForce(impulseForce);
 			
+			ofVec3f collisionCenter(0.0f);
+
+			for (TreeNode node: colBoxList)
+			{
+				Vector3 center = node.box.center();
+				collisionCenter.x += center.x();
+				collisionCenter.y += center.y();
+				collisionCenter.z += center.z();
+			}
+			
+			ofVec3f normal = (currentLander.pos - collisionCenter).normalize();
+			float force = (restitution * currentLander.velocity.length()) + gravity;
+			impulseForce = new ImpulseForce(force, normal);
+			sys.addForce(impulseForce);
 		}
 
 	}

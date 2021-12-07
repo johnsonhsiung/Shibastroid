@@ -75,10 +75,9 @@ public:
 };
 
 class ImpulseForce : public ParticleForce {
-	float resitituion;
-	ofVec3f velocity;
+	float forceMagnitude;
 	ofVec3f normal;
 public:
-	ImpulseForce(float restitution, ofVec3f velocity, ofVec3f normal);
+	ImpulseForce(float forceMagnitude, ofVec3f normal);
 	void updateForce(Particle *);
 };

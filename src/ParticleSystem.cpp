@@ -148,16 +148,13 @@ void ThrustForce::updateForce(Particle * particle) {
 	}
 }
 
-ImpulseForce::ImpulseForce(float restitution, ofVec3f velocity, ofVec3f normal) {
+ImpulseForce::ImpulseForce(float forceMagnitude, ofVec3f normal) {
 	applyOnce = true;
-	this->resitituion = resitituion;
-	this->velocity = velocity;
+	this->forceMagnitude = forceMagnitude;
 	this->normal = normal;
 }
 void ImpulseForce::updateForce(Particle * particle) {
-
-
-	particle->forces += (resitituion + 1) * (-velocity.dot(normal) * normal); 
+	particle->forces += forceMagnitude * normal;
 }
 
 
