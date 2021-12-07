@@ -71,7 +71,7 @@ void ParticleEmitter::stop() {
 	started = false;
 	fired = false;
 }
-void ParticleEmitter::update() {
+void ParticleEmitter::update(float deltaTime) {
 
 	float time = ofGetElapsedTimeMillis();
 
@@ -99,7 +99,7 @@ void ParticleEmitter::update() {
 		lastSpawned = time;
 	}
 
-	sys->update();
+	sys->update(deltaTime);
 }
 
 // spawn a single particle.  time is current time of birth
@@ -117,7 +117,7 @@ void ParticleEmitter::spawn(float time) {
 		ofVec3f dir = ofVec3f(ofRandom(-1, 1), ofRandom(-1, 1), ofRandom(-1, 1));
 		float speed = velocity.length();
 		particle.velocity = dir.getNormalized() * speed;
-		particle.position.set(position);
+		particle.pos.set(position);
         break;
 	}
         case RingEmitter:
@@ -125,7 +125,7 @@ void ParticleEmitter::spawn(float time) {
             ofVec3f dir = ofVec3f(ofRandom(-1, 1), ofRandom(-0.05,0.05), ofRandom(-1, 1));
             float speed = velocity.length();
             particle.velocity = dir.getNormalized() * speed;
-            particle.position.set(position+ ofVec3f(10,0,10));
+            particle.pos.set(position+ ofVec3f(10,0,10));
             break;
         }
 	break;
@@ -133,15 +133,9 @@ void ParticleEmitter::spawn(float time) {
 		break;
 	case DirectionalEmitter:
 		particle.velocity = velocity;
-		particle.position.set(position);
+		particle.pos.set(position);
 		break;
 	}
-
-	// other particle attributes
-	//
-	particle.lifespan = lifespan;
-	particle.birthtime = time;
-	particle.radius = particleRadius;
 
 	// add to system
 	//

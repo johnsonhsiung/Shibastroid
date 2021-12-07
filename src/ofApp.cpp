@@ -28,6 +28,42 @@ void ofApp::setup() {
 	ofEnableDepthTest();
 	theCam = &cam;
 
+	// texture loading
+	//
+	ofDisableArbTex();     // disable rectangular textures
+
+	// load textures
+	//
+	if (!ofLoadImage(particleTex, "images/dot.png")) {
+		cout << "Particle Texture File: images/dot.png not found" << endl;
+		ofExit();
+	}
+
+	// load the shader
+	//
+#ifdef TARGET_OPENGLES
+	shader.load("shaders_gles/shader");
+#else
+	shader.load("shaders/shader");
+#endif
+
+	// Create Forces
+//
+	turbForce = new TurbulenceForce(ofVec3f(0, 0, 0), ofVec3f(0, 0, 0));
+	gravityForce = new GravityForce(ofVec3f(0, 0, 0));
+	radialForce = new ImpulseRadialForce(1000);
+
+	// set up the emitter
+	// 
+	emitter.sys->addForce(turbForce);
+	emitter.sys->addForce(gravityForce);
+	emitter.sys->addForce(radialForce);
+
+	emitter.setVelocity(ofVec3f(0, 0, 0));
+	emitter.setOneShot(true);
+	emitter.setEmitterType(RadialEmitter);
+	emitter.setGroupSize(500);
+
 	//set up tracking cam
 	trackingCam.setPosition(100, 100, 100); 
 
@@ -129,6 +165,25 @@ void ofApp::setup() {
 	timeLastFrame = ofGetElapsedTimef();
 }
  
+// load vertex buffer in preparation for rendering
+//
+void ofApp::loadVbo() {
+	if (emitter.sys->particles.size() < 1) return;
+
+	vector<ofVec3f> sizes;
+	vector<ofVec3f> points;
+	for (int i = 0; i < emitter.sys->particles.size(); i++) {
+		points.push_back(emitter.sys->particles[i].pos);
+		sizes.push_back(ofVec3f(particleRadius));
+	}
+	// upload the data to the vbo
+	//
+	int total = (int)points.size();
+	vbo.clear();
+	vbo.setVertexData(&points[0], total, GL_STATIC_DRAW);
+	vbo.setNormalData(&sizes[0], total, GL_STATIC_DRAW);
+}
+
 //--------------------------------------------------------------
 // incrementally update scene (animation)
 //
@@ -143,9 +198,8 @@ void ofApp::update() {
 	//draw the altitude, laggy if checks every frame, so updates based on a slider 
 	float deltaLanderRayIntersectTime = ofGetElapsedTimef() - timeLastFrameIntersect; 
 	if (bDrawAltitude && (deltaLanderRayIntersectTime > intersectDeltaTime)) {
-		ofVec3f landerIntersectPoint; 
-		landerRayIntersectOctree(landerIntersectPoint);
-		landerAltitude = currentLander.pos.y - landerIntersectPoint.y;
+		float interstctY = landerRayIntersectOctree();
+		landerAltitude = currentLander.pos.y - interstctY;
 		timeLastFrameIntersect = ofGetElapsedTimef(); 
 	}
 
@@ -169,7 +223,7 @@ void ofApp::update() {
 
 	
 	//Check collisions if altitude is between the y-velocity. It gets laggy if we check all the time. Now it's only laggy sometimes
-	if (landerAltitude < (currentLander.velocity.y * -deltaTime && landerAltitude > (currentLander.velocity.y * deltaTime))) {
+	if (landerAltitude < -currentLander.velocity.y * deltaTime || landerAltitude < 5.0f) {
 		ofVec3f min = currentLander.lander.getSceneMin() + currentLander.lander.getPosition();
 		ofVec3f max = currentLander.lander.getSceneMax() + currentLander.lander.getPosition();
 		Box bounds = Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
@@ -183,7 +237,10 @@ void ofApp::update() {
 		platformOctree.intersect(bounds, platformOctree.root, platformColBoxList);
 		waterOctree.intersect(bounds, waterOctree.root, waterColBoxList);
 
-		if (waterColBoxList.size() != 0) {
+		if (waterColBoxList.size() != 0 && alive) {
+			emitter.sys->reset();
+			emitter.start();
+			alive = false;
 			cout << "Died!" << endl;
 		}
 		
@@ -242,9 +299,13 @@ void ofApp::update() {
 	keyLight.setPosition(keyLightPosition);
 	rimLight.setPosition(rimLightPosition);
 	fillLight.setPosition(fillLightPosition);
+
+
+	emitter.update(deltaTime);
 }
 //--------------------------------------------------------------
 void ofApp::draw() {
+	loadVbo();
 
 	ofBackground(ofColor::black);
 	ofEnableDepthTest();
@@ -280,6 +341,16 @@ void ofApp::draw() {
 	ofPopMatrix();
 	theCam->end();
 
+	shader.begin();
+	theCam->begin();
+
+	particleTex.bind();
+	vbo.draw(GL_POINTS, 0, (int)emitter.sys->particles.size());
+	particleTex.unbind();
+
+	theCam->end();
+	shader.end();
+
 	glDepthMask(false);
 	//might have to draw background image in here?
 	if (bDrawGui) gui.draw();
@@ -298,6 +369,8 @@ void ofApp::draw() {
 void ofApp::keyPressed(int key) {
 	const int OF_KEY_SPACE = 32;
 
+	if (!alive)
+		return;
 
 	switch (key) {
 	case OF_KEY_SPACE:
@@ -499,17 +572,41 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 }
 
-bool ofApp::landerRayIntersectOctree(ofVec3f &pointRet) {
+float ofApp::landerRayIntersectOctree() {
 	ofVec3f rayPoint = sys.particles[0].pos; 
 	ofVec3f rayDir(0, -1, 0);
 	Ray ray = Ray(Vector3(rayPoint.x, rayPoint.y, rayPoint.z),
 		Vector3(rayDir.x, rayDir.y, rayDir.z));
 	TreeNode intersectNode; 
+
+	float minY = -100000;
+
 	if (terrainOctree.intersect(ray, terrainOctree.root, intersectNode)) {
-		pointRet = terrainOctree.mesh.getVertex(intersectNode.points[0]);
-		return true; 
+		ofVec3f intersect = terrainOctree.mesh.getVertex(intersectNode.points[0]);
+
+		if (intersect.y > minY)
+			minY = intersect.y;
 	}
-	return false; 
+	if (islandOctree.intersect(ray, islandOctree.root, intersectNode)) {
+		ofVec3f intersect = islandOctree.mesh.getVertex(intersectNode.points[0]);
+
+		if (intersect.y > minY)
+			minY = intersect.y;
+	}
+	if (platformOctree.intersect(ray, platformOctree.root, intersectNode)) {
+		ofVec3f intersect = platformOctree.mesh.getVertex(intersectNode.points[0]);
+
+		if (intersect.y > minY)
+			minY = intersect.y;
+	}
+	if (waterOctree.intersect(ray, waterOctree.root, intersectNode)) {
+		ofVec3f intersect = waterOctree.mesh.getVertex(intersectNode.points[0]);
+
+		if (intersect.y > minY)
+			minY = intersect.y;
+	}
+
+	return minY;
 }
 
 

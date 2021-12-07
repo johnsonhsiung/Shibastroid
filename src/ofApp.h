@@ -6,6 +6,7 @@
 #include "Octree.h"
 #include "Particle.h";
 #include "ParticleSystem.h";
+#include "ParticleEmitter.h"
 
 
 
@@ -16,6 +17,8 @@ class ofApp : public ofBaseApp{
 		
 		float timeLastFrame;
 		float timeLastFrameIntersect;
+		float particleRadius = 5.0f;
+		bool alive = true;
 
 		void setup();
 		void update();
@@ -35,8 +38,9 @@ class ofApp : public ofBaseApp{
 		void togglePointsDisplay();
 		void setCameraTarget();
 		bool mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm, ofVec3f &point);
-		bool landerRayIntersectOctree(ofVec3f &pointRet);
+		float landerRayIntersectOctree();
 		glm::vec3 ofApp::getMousePointOnPlane(glm::vec3 p , glm::vec3 n);
+		void loadVbo();
 
 		ofEasyCam cam;
 		ofCamera *theCam; 
@@ -104,4 +108,20 @@ class ofApp : public ofBaseApp{
 		ofSoundPlayer soundPlayer; 
 
 		ofImage backgroundImage; 
+		
+		// Emitter and some forces; for explosion
+		//
+		ParticleEmitter emitter;
+
+		TurbulenceForce *turbForce;
+		ImpulseRadialForce *radialForce;
+
+		// textures
+		//
+		ofTexture  particleTex;
+
+		// shaders
+		//
+		ofVbo vbo;
+		ofShader shader;
 };

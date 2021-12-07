@@ -25,7 +25,7 @@ public:
 	void setEmitterType(EmitterType t) { type = t; }
 	void setGroupSize(int s) { groupSize = s; }
 	void setOneShot(bool s) { oneShot = s; }
-	void update();
+	void update(float deltaTime);
 	void spawn(float time);
 	ParticleSystem *sys;
 	float rate;         // per sec
