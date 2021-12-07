@@ -170,9 +170,7 @@ void ofApp::update() {
 		octree.intersect(bounds, octree.root, colBoxList);
 		
 		if (colBoxList.size() != 0) {
-	
-			cout << currentLander.velocity.y << "\n" << endl;
-
+			cout << currentLander.velocity << endl;
 			/*if (currentLander.velocity.y > -1.0) {
 				sys.isForcesActive = false; 
 				//currently this happens everytime because after applying impulse force, the velocity slows down
@@ -194,9 +192,22 @@ void ofApp::update() {
 				collisionCenter.z += center.z();
 			}
 			
-			ofVec3f normal = (currentLander.pos - collisionCenter).normalize();
-			float force = (restitution * currentLander.velocity.length()) + gravity;
-			impulseForce = new ImpulseForce(force, normal);
+			//ofVec3f normal = (currentLander.pos - collisionCenter).normalize();
+			ofVec3f normal(0.0f, 1.0f, 0.0f);
+
+			//Bounce if there is enough velocity
+			if (currentLander.velocity.length() > 5.0f) {
+				//ofVec3f reflectedVelocity = restitution * currentLander.velocity;
+				ofVec3f reflectedVelocity(currentLander.velocity.x, -currentLander.velocity.y, currentLander.velocity.z);
+				sys.particles[0].velocity.set(reflectedVelocity);
+			}
+			//Otherwise stop the ship
+			else {
+				sys.particles[0].velocity.set(0.0f);
+			}
+
+			//Apply a force counter to gravity
+			impulseForce = new ImpulseForce(gravity, normal);
 			sys.addForce(impulseForce);
 		}
 
