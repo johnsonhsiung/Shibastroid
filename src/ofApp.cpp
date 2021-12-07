@@ -176,11 +176,13 @@ void ofApp::update() {
 			/*if (currentLander.velocity.y > -1.0) {
 				sys.isForcesActive = false; 
 				//currently this happens everytime because after applying impulse force, the velocity slows down
+				//maybe we need some way to have it stop checking for collisions once you applied the impulseforce? At least until you exit the collisions. 
 			}
 			else {
 				
 				
 			}*/
+			//this force isn't enough to make it bounce up, even when i multiplied it by -gravity. Can check ImpulseForce class in particle system. 
 			impulseForce = new ImpulseForce(restitution, currentLander.velocity, octree.mesh.getNormal(colBoxList[0].points[0]));
 			sys.addForce(impulseForce);
 			
