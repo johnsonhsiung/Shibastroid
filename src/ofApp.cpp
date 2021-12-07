@@ -221,77 +221,92 @@ void ofApp::update() {
 	}
 
 
-	
+	if (!alive) {
+		sys.particles[0].velocity.set(ofVec3f(0.0f));
+	}
 	//Check collisions if altitude is between the y-velocity. It gets laggy if we check all the time. Now it's only laggy sometimes
-	if (landerAltitude < -currentLander.velocity.y * deltaTime || landerAltitude < 5.0f) {
-		ofVec3f min = currentLander.lander.getSceneMin() + currentLander.lander.getPosition();
-		ofVec3f max = currentLander.lander.getSceneMax() + currentLander.lander.getPosition();
-		Box bounds = Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
-		terrainColBoxList.clear();
-		islandColBoxList.clear();
-		platformColBoxList.clear();
-		waterColBoxList.clear();
-
-		terrainOctree.intersect(bounds, terrainOctree.root, terrainColBoxList);
-		islandOctree.intersect(bounds, islandOctree.root, islandColBoxList);
-		platformOctree.intersect(bounds, platformOctree.root, platformColBoxList);
-		waterOctree.intersect(bounds, waterOctree.root, waterColBoxList);
-
-		if (waterColBoxList.size() != 0 && alive) {
+	else if (landerAltitude < -currentLander.velocity.y * deltaTime || landerAltitude < 5.0f) {
+		if (currentLander.velocity.length() > 50.0f) {
+			emitter.setPosition(currentLander.pos);
 			emitter.sys->reset();
 			emitter.start();
 			alive = false;
+			sys.particles[0].velocity.set(ofVec3f(0.0f));
 			cout << "Died!" << endl;
 		}
-		
-		if (terrainColBoxList.size() != 0 || islandColBoxList.size() || 0 && platformColBoxList.size() != 0) {
-			ofVec3f collisionCenter(0.0f);
+		else
+		{
+			ofVec3f min = currentLander.lander.getSceneMin() + currentLander.lander.getPosition();
+			ofVec3f max = currentLander.lander.getSceneMax() + currentLander.lander.getPosition();
+			Box bounds = Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
+			terrainColBoxList.clear();
+			islandColBoxList.clear();
+			platformColBoxList.clear();
+			waterColBoxList.clear();
 
-			for (TreeNode node: terrainColBoxList)
-			{
-				Vector3 center = node.box.center();
-				collisionCenter.x += center.x();
-				collisionCenter.y += center.y();
-				collisionCenter.z += center.z();
+			terrainOctree.intersect(bounds, terrainOctree.root, terrainColBoxList);
+			islandOctree.intersect(bounds, islandOctree.root, islandColBoxList);
+			platformOctree.intersect(bounds, platformOctree.root, platformColBoxList);
+			waterOctree.intersect(bounds, waterOctree.root, waterColBoxList);
+
+			if (waterColBoxList.size() != 0 && alive) {
+				emitter.setPosition(currentLander.pos);
+				emitter.sys->reset();
+				emitter.start();
+				alive = false;
+				sys.particles[0].velocity.set(ofVec3f(0.0f));
+				cout << "Died!" << endl;
 			}
 
-			for (TreeNode node : islandColBoxList)
-			{
-				Vector3 center = node.box.center();
-				collisionCenter.x += center.x();
-				collisionCenter.y += center.y();
-				collisionCenter.z += center.z();
-			}
+			if (terrainColBoxList.size() != 0 || islandColBoxList.size() || 0 && platformColBoxList.size() != 0) {
+				ofVec3f collisionCenter(0.0f);
 
-			for (TreeNode node : platformColBoxList)
-			{
-				Vector3 center = node.box.center();
-				collisionCenter.x += center.x();
-				collisionCenter.y += center.y();
-				collisionCenter.z += center.z();
-			}
-			
-			//ofVec3f normal = (currentLander.pos - collisionCenter).normalize();
-			ofVec3f normal(0.0f, 1.0f, 0.0f);
-
-			//Bounce if there is enough velocity
-			if (currentLander.velocity.length() > 5.0f) {
-				//ofVec3f reflectedVelocity = restitution * currentLander.velocity;
-				ofVec3f reflectedVelocity(currentLander.velocity.x, -currentLander.velocity.y, currentLander.velocity.z);
-				sys.particles[0].velocity.set(reflectedVelocity);
-			}
-			//Otherwise stop the ship
-			else {
-				//sys.particles[0].velocity.set(0.0f);
-
-				if (platformColBoxList.size() != 0) {
-					cout << "Landed!" << endl;
+				for (TreeNode node : terrainColBoxList)
+				{
+					Vector3 center = node.box.center();
+					collisionCenter.x += center.x();
+					collisionCenter.y += center.y();
+					collisionCenter.z += center.z();
 				}
-			}
 
-			//Apply a force counter to gravity
-			impulseForce = new ImpulseForce(gravity, normal);
-			sys.addForce(impulseForce);
+				for (TreeNode node : islandColBoxList)
+				{
+					Vector3 center = node.box.center();
+					collisionCenter.x += center.x();
+					collisionCenter.y += center.y();
+					collisionCenter.z += center.z();
+				}
+
+				for (TreeNode node : platformColBoxList)
+				{
+					Vector3 center = node.box.center();
+					collisionCenter.x += center.x();
+					collisionCenter.y += center.y();
+					collisionCenter.z += center.z();
+				}
+
+				//ofVec3f normal = (currentLander.pos - collisionCenter).normalize();
+				ofVec3f normal(0.0f, 1.0f, 0.0f);
+
+				//Bounce if there is enough velocity
+				if (currentLander.velocity.length() > 5.0f) {
+					//ofVec3f reflectedVelocity = restitution * currentLander.velocity;
+					ofVec3f reflectedVelocity(currentLander.velocity.x, -currentLander.velocity.y, currentLander.velocity.z);
+					sys.particles[0].velocity.set(reflectedVelocity);
+				}
+				//Otherwise stop the ship
+				else {
+					//sys.particles[0].velocity.set(0.0f);
+
+					if (platformColBoxList.size() != 0) {
+						cout << "Landed!" << endl;
+					}
+				}
+
+				//Apply a force counter to gravity
+				impulseForce = new ImpulseForce(gravity, normal);
+				sys.addForce(impulseForce);
+			}
 		}
 	}
 

@@ -7,7 +7,7 @@
 //  Base class for any object that needs a transform.
 //
 class TransformObject {
-protected:
+public:
 	TransformObject();
 	ofVec3f position, scale;
 	float	rotation;
