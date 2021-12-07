@@ -101,7 +101,11 @@ void ofApp::setup() {
 
 	//  Create Octree for testing.
 	
-	octree.create(mars.getMesh(0), 20);
+	terrainOctree.create(mars.getMesh(0), 20);
+	islandOctree.create(mars.getMesh(1), 20);
+	platformOctree.create(mars.getMesh(2), 20);
+	waterOctree.create(mars.getMesh(3), 20);
+
 	//load shiba 
 	if (landerParticle.load("geo/Shib Ship.obj")) {
 		bboxList.clear();
@@ -169,25 +173,40 @@ void ofApp::update() {
 		ofVec3f min = currentLander.lander.getSceneMin() + currentLander.lander.getPosition();
 		ofVec3f max = currentLander.lander.getSceneMax() + currentLander.lander.getPosition();
 		Box bounds = Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
-		colBoxList.clear();
-		octree.intersect(bounds, octree.root, colBoxList);
+		terrainColBoxList.clear();
+		islandColBoxList.clear();
+		platformColBoxList.clear();
+		waterColBoxList.clear();
+
+		terrainOctree.intersect(bounds, terrainOctree.root, terrainColBoxList);
+		islandOctree.intersect(bounds, islandOctree.root, islandColBoxList);
+		platformOctree.intersect(bounds, platformOctree.root, platformColBoxList);
+		waterOctree.intersect(bounds, waterOctree.root, waterColBoxList);
+
+		if (waterColBoxList.size() != 0) {
+			cout << "Died!" << endl;
+		}
 		
-		if (colBoxList.size() != 0) {
-			cout << currentLander.velocity << endl;
-			/*if (currentLander.velocity.y > -1.0) {
-				sys.isForcesActive = false; 
-				//currently this happens everytime because after applying impulse force, the velocity slows down
-				//maybe we need some way to have it stop checking for collisions once you applied the impulseforce? At least until you exit the collisions. 
-			}
-			else {
-				
-				
-			}*/
-			//this force isn't enough to make it bounce up, even when i multiplied it by -gravity. Can check ImpulseForce class in particle system. 
-			
+		if (terrainColBoxList.size() != 0 || islandColBoxList.size() || 0 && platformColBoxList.size() != 0) {
 			ofVec3f collisionCenter(0.0f);
 
-			for (TreeNode node: colBoxList)
+			for (TreeNode node: terrainColBoxList)
+			{
+				Vector3 center = node.box.center();
+				collisionCenter.x += center.x();
+				collisionCenter.y += center.y();
+				collisionCenter.z += center.z();
+			}
+
+			for (TreeNode node : islandColBoxList)
+			{
+				Vector3 center = node.box.center();
+				collisionCenter.x += center.x();
+				collisionCenter.y += center.y();
+				collisionCenter.z += center.z();
+			}
+
+			for (TreeNode node : platformColBoxList)
 			{
 				Vector3 center = node.box.center();
 				collisionCenter.x += center.x();
@@ -206,26 +225,23 @@ void ofApp::update() {
 			}
 			//Otherwise stop the ship
 			else {
-				sys.particles[0].velocity.set(0.0f);
+				//sys.particles[0].velocity.set(0.0f);
+
+				if (platformColBoxList.size() != 0) {
+					cout << "Landed!" << endl;
+				}
 			}
 
 			//Apply a force counter to gravity
 			impulseForce = new ImpulseForce(gravity, normal);
 			sys.addForce(impulseForce);
 		}
-
 	}
-	
-
 
 	//update light positions based on sliders 
 	keyLight.setPosition(keyLightPosition);
 	rimLight.setPosition(rimLightPosition);
 	fillLight.setPosition(fillLightPosition);
-
-
-		
-	
 }
 //--------------------------------------------------------------
 void ofApp::draw() {
@@ -251,13 +267,13 @@ void ofApp::draw() {
 	//	ofNoFill();
 
 	if (bDisplayLeafNodes) {
-		octree.drawLeafNodes(octree.root);
-		cout << "num leaf: " << octree.numLeaf << endl;
+		terrainOctree.drawLeafNodes(terrainOctree.root);
+		cout << "num leaf: " << terrainOctree.numLeaf << endl;
     }
 	else if (bDisplayOctree) {
 		ofNoFill();
 		ofSetColor(ofColor::white);
-		octree.draw(numLevels, 1);
+		terrainOctree.draw(numLevels, 1);
 	}
 
 
@@ -489,8 +505,8 @@ bool ofApp::landerRayIntersectOctree(ofVec3f &pointRet) {
 	Ray ray = Ray(Vector3(rayPoint.x, rayPoint.y, rayPoint.z),
 		Vector3(rayDir.x, rayDir.y, rayDir.z));
 	TreeNode intersectNode; 
-	if (octree.intersect(ray, octree.root, intersectNode)) {
-		pointRet = octree.mesh.getVertex(intersectNode.points[0]);
+	if (terrainOctree.intersect(ray, terrainOctree.root, intersectNode)) {
+		pointRet = terrainOctree.mesh.getVertex(intersectNode.points[0]);
 		return true; 
 	}
 	return false; 

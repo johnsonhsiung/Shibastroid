@@ -53,9 +53,15 @@ class ofApp : public ofBaseApp{
 		ofLight light;
 		Box boundingBox, landerBounds;
 		Box testBox;
-		vector<TreeNode> colBoxList;
+		vector<TreeNode> terrainColBoxList;
+		vector<TreeNode> islandColBoxList;
+		vector<TreeNode> platformColBoxList;
+		vector<TreeNode> waterColBoxList;
 		bool bLanderSelected = false;
-		Octree octree;
+		Octree terrainOctree;
+		Octree islandOctree;
+		Octree platformOctree;
+		Octree waterOctree;
 		TreeNode selectedNode;
 		glm::vec3 mouseDownPos, mouseLastPos;
 		bool bInDrag = false;

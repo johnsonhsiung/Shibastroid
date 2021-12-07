@@ -62,7 +62,7 @@ void ofApp::setup(){
 	//  Create Octree for testing.
 	//
 	float t1 = ofGetElapsedTimeMillis();
-	octree.create(mars.getMesh(0), 20);
+	terrainOctree.create(mars.getMesh(0), 20);
 	float t2 = ofGetElapsedTimeMillis();
 	cout << "Time to Create Octree: " << t2 - t1 << " millisec" << endl;
 
@@ -149,18 +149,18 @@ void ofApp::draw() {
 	//	ofNoFill();
 
 	if (bDisplayLeafNodes) {
-		octree.drawLeafNodes(octree.root);
+		terrainOctree.drawLeafNodes(terrainOctree.root);
     }
 	else if (bDisplayOctree) {
 		ofNoFill();
 		ofSetColor(ofColor::white);
-		octree.draw(numLevels, 0);
+		terrainOctree.draw(numLevels, 0);
 	}
 
 	// if point selected, draw a sphere
 	//
 	if (pointSelected) {
-		ofVec3f p = octree.mesh.getVertex(selectedNode.points[0]);
+		ofVec3f p = terrainOctree.mesh.getVertex(selectedNode.points[0]);
 		ofVec3f d = p - cam.getPosition();
 		ofSetColor(ofColor::lightGreen);
 		ofDrawSphere(p, .02 * d.length());
